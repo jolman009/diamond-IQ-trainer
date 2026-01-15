@@ -14,9 +14,9 @@ import {
   IconButton,
 } from '@mui/material';
 import { RotateCcw, Play, Pause } from 'lucide-react';
-import { ScenarioV2, Position } from '@/types/scenario';
+import { ScenarioV2, Position, AnswerAnimation } from '@/types/scenario';
 import { AnswerQuality } from '@/types/drillSession';
-import { BaseballField, FieldAnimation } from './BaseballField';
+import { BaseballField } from './BaseballField';
 
 interface DrillPlayerProps {
   scenario: ScenarioV2;
@@ -116,68 +116,25 @@ export const DrillPlayer: React.FC<DrillPlayerProps> = ({
   const selectedAnswer = selectedQuality ? getAnswerOption(selectedQuality) : null;
   const timeProgress = (timeElapsed / maxTime) * 100;
 
-  // Helper to infer ball location from scenario text
-  const inferBallLocation = (s: ScenarioV2): Position => {
-    const text = (s.title + ' ' + s.description).toLowerCase();
-    
-    if (text.includes('left field') || text.includes('to left')) return 'lf';
-    if (text.includes('center field') || text.includes('to center')) return 'cf';
-    if (text.includes('right field') || text.includes('to right')) return 'rf';
-    if (text.includes('shortstop') || text.includes('to short')) return 'ss';
-    if (text.includes('to second') || text.includes('at second base')) return '2b';
-    if (text.includes('to third') || text.includes('at third base')) return '3b';
-    if (text.includes('to first') || text.includes('at first base')) return '1b';
-    if (text.includes('pitcher') || text.includes('mound')) return 'p';
-    if (text.includes('catcher') || text.includes('home plate')) return 'c';
-    
-    return s.position || 'p'; // Fallback to player position or pitcher
+  // Get animation config from the selected answer's animation data
+  const getAnimationConfig = (): AnswerAnimation | undefined => {
+    if (!selectedAnswer) return undefined;
+    return selectedAnswer.animation;
   };
 
-  // Define specific animations for scenarios
-  const getAnimationConfig = (): FieldAnimation | undefined => {
-    if (!selectedAnswer) return undefined;
-
-    // 1. Specific Scenario Overrides
-    if (scenario.id === 'baseball-003' && selectedAnswer?.id === 'baseball-003-best') {
-      return {
-        ballStart: 'ss',
-        ballEnd: '2base',
-        playerMovements: [
-          { position: '2b', target: '2base' }
-        ]
-      };
-    }
-
-    // 2. Generic Animation based on Answer Text
-    // Try to determine target from the answer label
-    const text = selectedAnswer.label.toLowerCase();
-    let target: 'home' | '1base' | '2base' | '3base' | undefined;
-    
-    if (text.includes('to first') || text.includes('at first')) target = '1base';
-    else if (text.includes('to second') || text.includes('at second')) target = '2base';
-    else if (text.includes('to third') || text.includes('at third')) target = '3base';
-    else if (text.includes('to home') || text.includes('at home') || text.includes('plate')) target = 'home';
-
-    if (target && scenario.position) {
-      const movements: { position: Position; target: 'home' | '1base' | '2base' | '3base' | Position }[] = [];
-      
-      // Simple heuristic for who covers the base
-      if (target === '2base') {
-        if (scenario.position === 'ss') movements.push({ position: '2b', target: '2base' });
-        else if (scenario.position === '2b') movements.push({ position: 'ss', target: '2base' });
-      } else if (target === '1base' && scenario.position !== '1b') {
-        movements.push({ position: '1b', target: '1base' });
-      } else if (target === '3base' && scenario.position !== '3b') {
-        movements.push({ position: '3b', target: '3base' });
+  // Infer ball location from animation config or scenario position
+  const inferBallLocation = (): Position | undefined => {
+    // If we have an animation, use its ballStart as the location
+    const anim = getAnimationConfig();
+    if (anim?.ballStart) {
+      // If ballStart is a position (not a base), return it
+      const positions: Position[] = ['c', '1b', '2b', '3b', 'ss', 'lf', 'cf', 'rf', 'p'];
+      if (positions.includes(anim.ballStart as Position)) {
+        return anim.ballStart as Position;
       }
-
-      return {
-        ballStart: scenario.position,
-        ballEnd: target,
-        playerMovements: movements
-      };
     }
-    return undefined;
+    // Fallback to scenario position
+    return scenario.position;
   };
 
   return (
@@ -205,7 +162,7 @@ export const DrillPlayer: React.FC<DrillPlayerProps> = ({
                 runners={scenario.runners}
                 highlightPosition={scenario.position}
                 animate={isAnimating}
-                ballLocation={inferBallLocation(scenario)}
+                ballLocation={inferBallLocation()}
                 animationConfig={getAnimationConfig()}
               />
             </Box>

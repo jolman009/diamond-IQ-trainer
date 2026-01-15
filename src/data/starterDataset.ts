@@ -30,18 +30,32 @@ export const STARTER_DATASET: ScenarioPack = {
         description: 'Quick throw to first base records the out cleanly.',
         coaching_cue:
           'With bases empty, the standard play is a routine ground out at first. Fast, efficient.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: '1base',
+          playerMovements: [{ position: '1b', target: '1base' }],
+        },
       },
       ok: {
         id: 'baseball-001-ok',
         label: 'Throw to second base if needed',
         description: 'Relay to second if the first baseman is out of position.',
         coaching_cue: 'Only if first baseman is pulled off the bag or moved away.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: '2base',
+          playerMovements: [{ position: '2b', target: '2base' }],
+        },
       },
       bad: {
         id: 'baseball-001-bad',
         label: 'Throw to home plate',
         description: 'No runners on base, this makes no sense.',
         coaching_cue: 'Always identify runners first. Home plate is empty—no play there.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: 'home',
+        },
       },
       difficulty: 'easy',
     },
@@ -64,6 +78,10 @@ export const STARTER_DATASET: ScenarioPack = {
         label: 'Make the catch, game over',
         description: 'Catch the ball for the third out and the inning is done.',
         coaching_cue: 'With two outs and bases empty, this is your job: get the out.',
+        animation: {
+          ballStart: 'home',
+          ballEnd: 'cf',
+        },
       },
       ok: {
         id: 'baseball-002-ok',
@@ -71,12 +89,21 @@ export const STARTER_DATASET: ScenarioPack = {
         description: 'Not necessary, but safe.',
         coaching_cue:
           'Extra throw is not wrong, just unnecessary when the inning is already over.',
+        animation: {
+          ballStart: 'cf',
+          ballEnd: '2base',
+          playerMovements: [{ position: 'ss', target: '2base' }],
+        },
       },
       bad: {
         id: 'baseball-002-bad',
         label: 'Let it fall, try to get a double play',
         description: 'No runners on—impossible to double anyone up.',
         coaching_cue: 'Always evaluate runners. No runners = no double play. Make the catch.',
+        animation: {
+          ballStart: 'home',
+          ballEnd: 'cf',
+        },
       },
       difficulty: 'easy',
     },
@@ -101,6 +128,11 @@ export const STARTER_DATASET: ScenarioPack = {
         description: 'Get the lead runner, then second baseman throws to first for the double.',
         coaching_cue:
           'Force play at second. Quick feet, accurate throw. Let the relay complete the DP.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: '2base',
+          playerMovements: [{ position: '2b', target: '2base' }],
+        },
       },
       ok: {
         id: 'baseball-003-ok',
@@ -108,12 +140,21 @@ export const STARTER_DATASET: ScenarioPack = {
         description: 'Gets one out but misses the double play.',
         coaching_cue:
           'Acceptable if you cannot reach second cleanly. But always try for the DP.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: '1base',
+          playerMovements: [{ position: '1b', target: '1base' }],
+        },
       },
       bad: {
         id: 'baseball-003-bad',
         label: 'Throw to home plate',
         description: 'Wrong—the runner is not advancing toward home.',
         coaching_cue: 'Bases occupied rule: force play is at the base the runner must vacate.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: 'home',
+        },
       },
       difficulty: 'medium',
     },
@@ -138,18 +179,31 @@ export const STARTER_DATASET: ScenarioPack = {
           'Prevents the runner from advancing. Gets the second out if he tries to tag up.',
         coaching_cue:
           'Deep fly = runner tags up and advances. Throw to the base he is advancing to.',
+        animation: {
+          ballStart: 'lf',
+          ballEnd: '2base',
+          playerMovements: [{ position: 'ss', target: '2base' }],
+        },
       },
       ok: {
         id: 'baseball-004-ok',
         label: 'Throw to the cutoff man',
         description: 'Relay to a cutoff man is also acceptable.',
         coaching_cue: 'If you do not have a clear line to second, use the cutoff.',
+        animation: {
+          ballStart: 'lf',
+          ballEnd: 'ss',
+        },
       },
       bad: {
         id: 'baseball-004-bad',
         label: 'Throw directly to home plate',
         description: 'Runner is on first, not trying to score on this fly ball.',
         coaching_cue: 'Identify the runner advance path. He is going to second, not home.',
+        animation: {
+          ballStart: 'lf',
+          ballEnd: 'home',
+        },
       },
       difficulty: 'medium',
     },
@@ -174,6 +228,11 @@ export const STARTER_DATASET: ScenarioPack = {
         description: 'With two outs, the third out anywhere ends the inning. First is easiest.',
         coaching_cue:
           'Two outs: any force out wins. Runner on third cannot score on a force at first.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: '1base',
+          playerMovements: [{ position: '1b', target: '1base' }],
+        },
       },
       ok: {
         id: 'baseball-005-ok',
@@ -181,6 +240,10 @@ export const STARTER_DATASET: ScenarioPack = {
         description: 'Gets the run, but riskier if the throw is not perfect.',
         coaching_cue:
           'Home play works if you have a clear throw. But with two outs, first is safer.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: 'home',
+        },
       },
       bad: {
         id: 'baseball-005-bad',
@@ -188,6 +251,11 @@ export const STARTER_DATASET: ScenarioPack = {
         description: 'No force play at second with a runner already on first. Bad decision.',
         coaching_cue:
           'Runner on first means no force at second. Runner must be tagged. Avoid this.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: '2base',
+          playerMovements: [{ position: '2b', target: '2base' }],
+        },
       },
       difficulty: 'hard',
     },
@@ -210,6 +278,11 @@ export const STARTER_DATASET: ScenarioPack = {
         label: 'Throw to home plate',
         description: 'Runner on third tags and scores. Throw to catcher or cutoff for home.',
         coaching_cue: 'Sac fly: runner on third scores on the out. Prevent the run with a strong throw.',
+        animation: {
+          ballStart: 'cf',
+          ballEnd: 'home',
+          playerMovements: [{ position: 'ss', target: 'p' }],
+        },
       },
       ok: {
         id: 'baseball-006-ok',
@@ -217,12 +290,21 @@ export const STARTER_DATASET: ScenarioPack = {
         description: 'Stops the runner on first from advancing, but allows run to score.',
         coaching_cue:
           'Acceptable if you cannot reach home safely. But prioritize home with a runner there.',
+        animation: {
+          ballStart: 'cf',
+          ballEnd: '2base',
+          playerMovements: [{ position: '2b', target: '2base' }],
+        },
       },
       bad: {
         id: 'baseball-006-bad',
         label: 'Throw to third base (no one is there)',
         description: 'Illogical throw. No runner is going to third.',
         coaching_cue: 'Base awareness: identify occupied bases and likely advance routes.',
+        animation: {
+          ballStart: 'cf',
+          ballEnd: '3base',
+        },
       },
       difficulty: 'medium',
     },
@@ -246,6 +328,10 @@ export const STARTER_DATASET: ScenarioPack = {
         label: 'Catch the pop-up for the out',
         description: 'Pop-up is an out. All runners can tag up and potentially score.',
         coaching_cue: 'Catch the ball. Let runners tag and advance. Do not throw for a tag-up.',
+        animation: {
+          ballStart: 'home',
+          ballEnd: 'c',
+        },
       },
       ok: {
         id: 'baseball-007-ok',
@@ -253,6 +339,11 @@ export const STARTER_DATASET: ScenarioPack = {
         description: 'Possible if runners do not advance.',
         coaching_cue:
           'Only if infielder is in position for a relay. Not ideal, but not wrong.',
+        animation: {
+          ballStart: 'c',
+          ballEnd: '1base',
+          playerMovements: [{ position: '1b', target: '1base' }],
+        },
       },
       bad: {
         id: 'baseball-007-bad',
@@ -260,6 +351,10 @@ export const STARTER_DATASET: ScenarioPack = {
         description: 'Infield fly rule: must be called. You cannot intentionally drop it.',
         coaching_cue:
           'Infield fly is called by the umpire. You must make the effort to catch it.',
+        animation: {
+          ballStart: 'home',
+          ballEnd: 'home',
+        },
       },
       difficulty: 'hard',
     },
@@ -274,28 +369,43 @@ export const STARTER_DATASET: ScenarioPack = {
       category: 'runner-2b',
       title: 'Grounder to Shortstop, Runner on Second',
       description:
-        'Runner on second base, no outs. Grounder to the shortstop. Runner must advance or be forced.',
+        'Runner on second base, no outs. Grounder to the shortstop. First base is unoccupied.',
       outs: 0,
       runners: ['2b'],
-      question: 'Where is the force play?',
+      question: 'What is the best play?',
       best: {
         id: 'softball-001-best',
-        label: 'Throw to third base for the force out',
-        description: 'Runner on second is forced to third. Clean force out.',
+        label: 'Throw to first base for the out',
+        description: 'Get the sure out on the batter. The only force play available.',
         coaching_cue:
-          'Occupied base rule: runner on second must go to third on a force at second. Throw there.',
+          'With no runner on first, there is no force at third. The batter running to first is your only force play.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: '1base',
+          playerMovements: [{ position: '1b', target: '1base' }],
+        },
       },
       ok: {
         id: 'softball-001-ok',
-        label: 'Throw to first base (start a double play)',
-        description: 'Gets one out, potential for DP if third baseman relays.',
-        coaching_cue: 'Acceptable, but force at third is the primary play.',
+        label: 'Look the runner back, then throw to first',
+        description: 'Freeze the runner at second, then get the out at first.',
+        coaching_cue: 'Good awareness. Keep the runner at second and take the sure out.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: '1base',
+          playerMovements: [{ position: '1b', target: '1base' }],
+        },
       },
       bad: {
         id: 'softball-001-bad',
-        label: 'Throw to second base',
-        description: 'No one is on first, so no force at second. Logical error.',
-        coaching_cue: 'Runner on second with no runner on first = no force at second.',
+        label: 'Throw to third base for a force out',
+        description: 'There is no force at third. Runner would need to be tagged.',
+        coaching_cue: 'No force exists at third when first base is empty. Runner on second is not forced to advance.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: '3base',
+          playerMovements: [{ position: '3b', target: '3base' }],
+        },
       },
       difficulty: 'medium',
     },
@@ -309,28 +419,50 @@ export const STARTER_DATASET: ScenarioPack = {
       category: 'runners-1b-2b',
       title: 'Bunted Ball, Runners on 1st & 2nd',
       description:
-        'Runners on first and second (no outs). Bunt down the first base line. Pitcher fields it cleanly.',
+        'Runners on first and second (no outs). Excellent bunt down the first base line. Pitcher fields it with body facing first base.',
       outs: 0,
       runners: ['1b', '2b'],
-      question: 'Where does the pitcher throw to force out the lead runner?',
+      question: 'What is the best play?',
       best: {
         id: 'softball-002-best',
-        label: 'Throw to third base',
-        description: 'Force out the runner from second base at third.',
+        label: 'Throw to first base for the sure out',
+        description: 'Get the guaranteed out. No runs scored, runners advance to 2nd and 3rd.',
         coaching_cue:
-          'Sacrifice bunt: lead runner is the priority. Get the force at third, not first.',
+          'Take what the offense gives you. Body facing 1st, ball bunted away from 3rd - the sure out at first is the smart play. Don\'t risk bases loaded with no outs.',
+        animation: {
+          ballStart: 'bunt-1b',
+          ballEnd: '1base',
+          playerMovements: [
+            { position: 'p', target: 'bunt-1b' },
+            { position: '1b', target: 'bunt-1b-inside' },
+            { position: '2b', target: '1base' },
+          ],
+          runnerMovements: [
+            { from: '1b', to: '2b' },
+            { from: '2b', to: '3b' },
+          ],
+        },
       },
       ok: {
         id: 'softball-002-ok',
-        label: 'Throw to first base',
-        description: 'Gets the batter out, but allows runners to advance.',
-        coaching_cue: 'Gets one out, but not the ideal force sequence.',
+        label: 'Throw to third base for the lead runner',
+        description: 'Aggressive play, but low percentage. Requires perfect throw with body turned away.',
+        coaching_cue: 'Only attempt if you have exceptional time and 3B is covering. High risk of everyone being safe.',
+        animation: {
+          ballStart: 'p',
+          ballEnd: '3base',
+          playerMovements: [{ position: '3b', target: '3base' }],
+        },
       },
       bad: {
         id: 'softball-002-bad',
-        label: 'Throw to second base',
-        description: 'Runner is leaving second and advancing to third. No one is on second.',
-        coaching_cue: 'Runner on second is moving. The force is ahead of her, not at second.',
+        label: 'Hesitate and hold the ball',
+        description: 'Everyone is safe. The bunt worked perfectly.',
+        coaching_cue: 'Make a decision and execute. Hesitation gives the offense exactly what they wanted - runners advancing with no outs.',
+        animation: {
+          ballStart: 'p',
+          ballEnd: 'p',
+        },
       },
       difficulty: 'hard',
     },
@@ -354,18 +486,31 @@ export const STARTER_DATASET: ScenarioPack = {
         label: 'Catch the ball for the third out',
         description: 'Make the catch and the inning is over.',
         coaching_cue: 'Two outs, bases empty: the only play that matters is the catch.',
+        animation: {
+          ballStart: 'home',
+          ballEnd: 'lf',
+        },
       },
       ok: {
         id: 'softball-003-ok',
         label: 'Catch the ball and relay to second',
         description: 'Unnecessary, but safe.',
         coaching_cue: 'Extra throw is not harmful. But not needed when the inning is already over.',
+        animation: {
+          ballStart: 'lf',
+          ballEnd: '2base',
+          playerMovements: [{ position: 'ss', target: '2base' }],
+        },
       },
       bad: {
         id: 'softball-003-bad',
         label: 'Let it bounce, try to get a force out',
         description: 'Bases are empty. No force play is possible.',
         coaching_cue: 'No runners on base = no force play. Catch the line drive.',
+        animation: {
+          ballStart: 'home',
+          ballEnd: 'lf',
+        },
       },
       difficulty: 'easy',
     },
@@ -388,19 +533,36 @@ export const STARTER_DATASET: ScenarioPack = {
         label: 'Throw to second base for the force',
         description: 'Get the lead runner at second, allow the relay for a double play.',
         coaching_cue:
-          'Short-hop to second baseman or straight to second. Quick hands, accurate throw.',
+          'Quick throw to second baseman covering the bag. SS backs up behind third in case the ball gets by.',
+        animation: {
+          ballStart: '3b',
+          ballEnd: '2base',
+          playerMovements: [
+            { position: '2b', target: '2base' },
+            { position: 'ss', target: 'backup-3b' },
+          ],
+        },
       },
       ok: {
         id: 'softball-004-ok',
         label: 'Throw to first base for the out',
         description: 'Gets one out, no DP, but safe.',
         coaching_cue: 'If the double play is not available, first is acceptable.',
+        animation: {
+          ballStart: '3b',
+          ballEnd: '1base',
+          playerMovements: [{ position: '1b', target: '1base' }],
+        },
       },
       bad: {
         id: 'softball-004-bad',
         label: 'Throw to home plate',
         description: 'No runner is advancing toward home. Wrong read.',
         coaching_cue: 'Identify runners and their advance paths. Runner on first goes to second.',
+        animation: {
+          ballStart: '3b',
+          ballEnd: 'home',
+        },
       },
       difficulty: 'hard',
     },
@@ -425,6 +587,11 @@ export const STARTER_DATASET: ScenarioPack = {
         description: 'Get the runner coming from first. Prevent him from taking third.',
         coaching_cue:
           'Hit the cutoff man or throw directly to second. Aggressive play to prevent extra base.',
+        animation: {
+          ballStart: 'rf',
+          ballEnd: '3base',
+          playerMovements: [{ position: '3b', target: '3base' }],
+        },
       },
       ok: {
         id: 'baseball-008-ok',
@@ -432,6 +599,10 @@ export const STARTER_DATASET: ScenarioPack = {
         description: 'Prevents a potential advance to home if the play is mishandled.',
         coaching_cue:
           'Secondary play. Primary is to stop him at second, not worry about home.',
+        animation: {
+          ballStart: 'rf',
+          ballEnd: 'home',
+        },
       },
       bad: {
         id: 'baseball-008-bad',
@@ -439,6 +610,10 @@ export const STARTER_DATASET: ScenarioPack = {
         description: 'Runner will take an extra base if you do not challenge him.',
         coaching_cue:
           'Always be aggressive on the throw. Do not let the runner dictate the pace.',
+        animation: {
+          ballStart: 'rf',
+          ballEnd: 'rf',
+        },
       },
       difficulty: 'medium',
     },
@@ -462,12 +637,21 @@ export const STARTER_DATASET: ScenarioPack = {
         description: 'Be in position to receive the throw from the outfielder and relay.',
         coaching_cue:
           'Cutoff man is the relay point. Position yourself between the outfielder and the base.',
+        animation: {
+          ballStart: 'rf',
+          ballEnd: 'p',
+          playerMovements: [{ position: 'c', target: 'p' }],
+        },
       },
       ok: {
         id: 'baseball-009-ok',
         label: 'Stay at home plate and prepare to receive a throw',
         description: 'If the runner is heading home, stay and be ready.',
         coaching_cue: 'Runner on second might try to score. Be ready, but moving up is ideal.',
+        animation: {
+          ballStart: 'rf',
+          ballEnd: 'home',
+        },
       },
       bad: {
         id: 'baseball-009-bad',
@@ -475,6 +659,10 @@ export const STARTER_DATASET: ScenarioPack = {
         description: 'You are out of position to help on the play.',
         coaching_cue:
           'Get out of the batter\'s box. Communicate and position for the cutoff or play.',
+        animation: {
+          ballStart: 'rf',
+          ballEnd: 'rf',
+        },
       },
       difficulty: 'hard',
     },
@@ -499,12 +687,22 @@ export const STARTER_DATASET: ScenarioPack = {
           'Second baseman has the best angle and can make the throw for a double play.',
         coaching_cue:
           'Second baseman backs up the middle. Call early, call loud. Take the infield fly out.',
+        animation: {
+          ballStart: 'home',
+          ballEnd: '2b',
+          playerMovements: [{ position: '2b', target: '2base' }],
+        },
       },
       ok: {
         id: 'softball-005-ok',
         label: 'Shortstop calls for it',
         description: 'Shortstop can make the play, but second has the better angle.',
         coaching_cue: 'If second does not call, shortstop should. But defer to second.',
+        animation: {
+          ballStart: 'home',
+          ballEnd: 'ss',
+          playerMovements: [{ position: 'ss', target: '2base' }],
+        },
       },
       bad: {
         id: 'softball-005-bad',
@@ -512,6 +710,10 @@ export const STARTER_DATASET: ScenarioPack = {
         description: 'Miscommunication results in runners advancing.',
         coaching_cue:
           'Communication is key. A loud call prevents collisions and errors. Own the pop-up.',
+        animation: {
+          ballStart: 'home',
+          ballEnd: '2base',
+        },
       },
       difficulty: 'hard',
     },
@@ -535,18 +737,31 @@ export const STARTER_DATASET: ScenarioPack = {
         description: 'Quick feet, fast to the ball, accurate throw to first.',
         coaching_cue:
           'Charge the roller. Get in front of it. Make the throw cleanly. Routine ground out.',
+        animation: {
+          ballStart: '2b',
+          ballEnd: '1base',
+          playerMovements: [{ position: '1b', target: '1base' }],
+        },
       },
       ok: {
         id: 'baseball-010-ok',
         label: 'Let it roll, hope it goes foul',
         description: 'Passive approach, hoping the ball rolls out of play.',
         coaching_cue: 'Do not rely on luck. Be aggressive and make the play yourself.',
+        animation: {
+          ballStart: 'home',
+          ballEnd: '2b',
+        },
       },
       bad: {
         id: 'baseball-010-bad',
         label: 'Throw to second base (no one there)',
         description: 'Irrational throw. The batter is running to first.',
         coaching_cue: 'Bases occupied: identify where the runner must go. First base is the play.',
+        animation: {
+          ballStart: '2b',
+          ballEnd: '2base',
+        },
       },
       difficulty: 'easy',
     },

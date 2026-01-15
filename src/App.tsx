@@ -5,6 +5,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { LoginPage } from '@/pages/LoginPage';
 import { AdaptiveDrillPage } from '@/pages/AdaptiveDrillPage';
+import { ScenarioPreviewPage } from '@/pages/ScenarioPreviewPage';
 
 function App(): JSX.Element {
   useEffect(() => {
@@ -19,6 +20,7 @@ function App(): JSX.Element {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/preview" element={<ScenarioPreviewPage />} />
           <Route
             path="/"
             element={

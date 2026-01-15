@@ -1,15 +1,6 @@
 import React from 'react';
 import { Box, useTheme } from '@mui/material';
-import { Sport, Position } from '@/types/scenario';
-
-export interface FieldAnimation {
-  ballStart?: Position | 'home' | '1base' | '2base' | '3base';
-  ballEnd?: Position | 'home' | '1base' | '2base' | '3base';
-  playerMovements?: {
-    position: Position;
-    target: Position | 'home' | '1base' | '2base' | '3base';
-  }[];
-}
+import { Sport, Position, AnswerAnimation, AnimationLocation, RunnerMovement } from '@/types/scenario';
 
 interface BaseballFieldProps {
   sport: Sport;
@@ -17,7 +8,7 @@ interface BaseballFieldProps {
   highlightPosition?: Position;
   animate?: boolean;
   ballLocation?: Position;
-  animationConfig?: FieldAnimation;
+  animationConfig?: AnswerAnimation;
 }
 
 /**
@@ -57,18 +48,27 @@ export const BaseballField: React.FC<BaseballFieldProps> = ({
     }
   };
 
-  // Helper to get coordinates for any key (position or base)
-  const getCoords = (key: Position | 'home' | '1base' | '2base' | '3base') => {
+  // Helper to get coordinates for any key (position, base, or zone)
+  const getCoords = (key: AnimationLocation) => {
     // Check standard positions first
     const posCoords = getPositionCoords(key as Position);
     if (posCoords) return posCoords;
 
-    // Check bases
+    // Check bases and special zones
     switch (key) {
       case 'home': return { x: 50, y: 85 };
       case '1base': return { x: 80, y: 55 };
       case '2base': return { x: 50, y: 25 };
       case '3base': return { x: 20, y: 55 };
+      // Bunt zones on foul lines (between home and bases)
+      case 'bunt-1b': return { x: 65, y: 70 };
+      case 'bunt-3b': return { x: 35, y: 70 };
+      // Backup positions (between foul line and mound)
+      case 'bunt-1b-inside': return { x: 57, y: 65 };
+      case 'bunt-3b-inside': return { x: 43, y: 65 };
+      // Behind the bases in foul territory (for backing up plays)
+      case 'backup-3b': return { x: 12, y: 48 };
+      case 'backup-1b': return { x: 88, y: 48 };
       default: return { x: 50, y: 50 };
     }
   };
@@ -135,6 +135,34 @@ export const BaseballField: React.FC<BaseballFieldProps> = ({
         {/* Pitcher's Plate */}
         <rect x="49" y="54.5" width="2" height="0.5" fill="white" />
 
+        {/* Animated Runners */}
+        {animationConfig?.runnerMovements?.map((rm: RunnerMovement, idx: number) => {
+          const fromCoords = rm.from === '1b' ? { x: 80, y: 55 } :
+                            rm.from === '2b' ? { x: 50, y: 25 } :
+                            { x: 20, y: 55 }; // 3b
+          const toCoords = rm.to === '2b' ? { x: 50, y: 25 } :
+                          rm.to === '3b' ? { x: 20, y: 55 } :
+                          { x: 50, y: 85 }; // home
+          return (
+            <circle
+              key={`runner-${idx}`}
+              cx={fromCoords.x}
+              cy={fromCoords.y}
+              r="2"
+              fill={runnerColor}
+              stroke="white"
+              strokeWidth="0.5"
+            >
+              {animate && (
+                <>
+                  <animate attributeName="cx" from={fromCoords.x} to={toCoords.x} dur="2s" fill="freeze" begin="0s" />
+                  <animate attributeName="cy" from={fromCoords.y} to={toCoords.y} dur="2s" fill="freeze" begin="0s" />
+                </>
+              )}
+            </circle>
+          );
+        })}
+
         {/* Static Ball Path (only if no animation active) */}
         {ballPos && !animBallEnd && (
           <line
@@ -163,35 +191,35 @@ export const BaseballField: React.FC<BaseballFieldProps> = ({
 
           return (
             <g key={pos}>
-              <circle 
-                cx={coords.x} 
-                cy={coords.y} 
-                r={isHighlighted ? 4 : 2.5} 
-                fill={isHighlighted ? theme.palette.primary.main : '#e0e0e0'} 
-                stroke={isHighlighted ? 'white' : '#757575'} 
-                strokeWidth={isHighlighted ? 1 : 0.5} 
+              <circle
+                cx={coords.x}
+                cy={coords.y}
+                r={isHighlighted ? 4 : 2.5}
+                fill={isHighlighted ? theme.palette.primary.main : '#e0e0e0'}
+                stroke={isHighlighted ? 'white' : '#757575'}
+                strokeWidth={isHighlighted ? 1 : 0.5}
               >
                 {movement && targetCoords && animate && (
                   <>
-                    <animate attributeName="cx" from={coords.x} to={targetCoords.x} dur="1s" fill="freeze" begin="0s" />
-                    <animate attributeName="cy" from={coords.y} to={targetCoords.y} dur="1s" fill="freeze" begin="0s" />
+                    <animate attributeName="cx" from={coords.x} to={targetCoords.x} dur="2s" fill="freeze" begin="0s" />
+                    <animate attributeName="cy" from={coords.y} to={targetCoords.y} dur="2s" fill="freeze" begin="0s" />
                   </>
                 )}
               </circle>
-              <text 
-                x={coords.x} 
-                y={coords.y} 
+              <text
+                x={coords.x}
+                y={coords.y}
                 dy=".35em"
-                fontSize={isHighlighted ? 3 : 1.5} 
-                fill={isHighlighted ? 'white' : '#424242'} 
-                textAnchor="middle" 
+                fontSize={isHighlighted ? 3 : 1.5}
+                fill={isHighlighted ? 'white' : '#424242'}
+                textAnchor="middle"
                 fontWeight="bold"
                 style={{ pointerEvents: 'none' }}
               >
                 {movement && targetCoords && animate && (
                   <>
-                    <animate attributeName="x" from={coords.x} to={targetCoords.x} dur="1s" fill="freeze" begin="0s" />
-                    <animate attributeName="y" from={coords.y} to={targetCoords.y} dur="1s" fill="freeze" begin="0s" />
+                    <animate attributeName="x" from={coords.x} to={targetCoords.x} dur="2s" fill="freeze" begin="0s" />
+                    <animate attributeName="y" from={coords.y} to={targetCoords.y} dur="2s" fill="freeze" begin="0s" />
                   </>
                 )}
                 {pos.toUpperCase()}
@@ -202,16 +230,17 @@ export const BaseballField: React.FC<BaseballFieldProps> = ({
 
         {/* Animated Ball */}
         {animBallStart && animBallEnd && animate && (
-          <circle 
-            cx={animBallStart.x} 
-            cy={animBallStart.y} 
-            r="1.5" 
-            fill="#FFD700" 
-            stroke="black" 
-            strokeWidth="0.2" 
+          <circle
+            cx={animBallStart.x}
+            cy={animBallStart.y}
+            r="1.5"
+            fill="#FFD700"
+            stroke="black"
+            strokeWidth="0.2"
           >
-            <animate attributeName="cx" from={animBallStart.x} to={animBallEnd.x} dur="1s" fill="freeze" begin="0s" />
-            <animate attributeName="cy" from={animBallStart.y} to={animBallEnd.y} dur="1s" fill="freeze" begin="0s" />
+            {/* Ball waits for players to arrive (2s), then throw is quick (0.5s) */}
+            <animate attributeName="cx" from={animBallStart.x} to={animBallEnd.x} dur="0.5s" fill="freeze" begin="2s" />
+            <animate attributeName="cy" from={animBallStart.y} to={animBallEnd.y} dur="0.5s" fill="freeze" begin="2s" />
           </circle>
         )}
 

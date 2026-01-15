@@ -26,6 +26,45 @@ export const PositionEnum = z.enum([
 ]);
 export type Position = z.infer<typeof PositionEnum>;
 
+// Animation location can be a fielding position, a base, or a special zone
+export const AnimationLocationEnum = z.enum([
+  'c', '1b', '2b', '3b', 'ss', 'lf', 'cf', 'rf', 'p',
+  'home', '1base', '2base', '3base',
+  'bunt-1b', 'bunt-3b', // Bunt zones on foul lines
+  'bunt-1b-inside', 'bunt-3b-inside', // Between foul line and mound (backup positions)
+  'backup-3b', 'backup-1b' // Behind the bases in foul territory (for backing up plays)
+]);
+export type AnimationLocation = z.infer<typeof AnimationLocationEnum>;
+
+/**
+ * Player movement animation - a player moving to cover a base or position
+ */
+export const PlayerMovementSchema = z.object({
+  position: PositionEnum,
+  target: AnimationLocationEnum,
+});
+export type PlayerMovement = z.infer<typeof PlayerMovementSchema>;
+
+/**
+ * Runner movement animation - a runner advancing bases
+ */
+export const RunnerMovementSchema = z.object({
+  from: z.enum(['1b', '2b', '3b']),
+  to: z.enum(['2b', '3b', 'home']),
+});
+export type RunnerMovement = z.infer<typeof RunnerMovementSchema>;
+
+/**
+ * Animation configuration for visualizing a play
+ */
+export const AnswerAnimationSchema = z.object({
+  ballStart: AnimationLocationEnum,
+  ballEnd: AnimationLocationEnum,
+  playerMovements: z.array(PlayerMovementSchema).optional(),
+  runnerMovements: z.array(RunnerMovementSchema).optional(),
+});
+export type AnswerAnimation = z.infer<typeof AnswerAnimationSchema>;
+
 export const CategoryEnum = z.enum([
   'bases-empty',
   'runner-1b',
@@ -54,6 +93,8 @@ export const AnswerOptionSchema = z.object({
   description: z.string().min(1, 'Description required'),
   // Why this is correct or incorrect - the teaching moment
   coaching_cue: z.string().min(1, 'Coaching cue required'),
+  // Animation config for visualizing this play
+  animation: AnswerAnimationSchema.optional(),
 });
 
 export type AnswerOption = z.infer<typeof AnswerOptionSchema>;
