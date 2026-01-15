@@ -10,6 +10,8 @@ import {
   Button,
   Alert,
 } from '@mui/material';
+import { LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { DrillPlayer } from '@/components/DrillPlayer';
 import { FilterPanel } from '@/components/FilterPanel';
 import { ScenarioV2 } from '@/types/scenario';
@@ -18,6 +20,7 @@ import { DrillSession, createDrillSession } from '@/types/drillSession';
 import { pickNextScenario, applyResult, getDrillStats } from '@/utils/drillEngine';
 import { filterScenarios, getUniqueValues } from '@/utils/filterScenarios';
 import { STARTER_DATASET } from '@/data/starterDataset';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   saveSessionToLocalStorage,
   loadSessionFromLocalStorage,
@@ -44,11 +47,19 @@ import {
  * In M7, this will use Supabase backend.
  */
 export const AdaptiveDrillPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
   const [session, setSession] = useState<DrillSession | null>(null);
   const [currentScenario, setCurrentScenario] = useState<ScenarioV2 | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [noScenariosAvailable, setNoScenariosAvailable] = useState(false);
   const [filter, setFilter] = useState<ScenarioFilter>(createEmptyFilter());
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   // Get filtered scenarios based on current filter
   const filteredScenarios = filterScenarios(STARTER_DATASET.scenarios, filter);
@@ -147,15 +158,39 @@ export const AdaptiveDrillPage: React.FC = () => {
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 4 }}>
       <Container maxWidth="lg">
-        {/* Page Header */}
+        {/* Page Header with User Info */}
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-            Adaptive Decision Trainer
-          </Typography>
-          <Typography variant="body1" color="textSecondary">
-            Improve your in-game decision-making with spaced repetition drills.
-          </Typography>
+          <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 2 }}>
+            <Box>
+              <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+                Adaptive Decision Trainer
+              </Typography>
+              <Typography variant="body1" color="textSecondary">
+                Improve your in-game decision-making with spaced repetition drills.
+              </Typography>
+            </Box>
+            {user && (
+              <Stack spacing={1} alignItems="flex-end">
+                <Typography variant="caption" color="textSecondary">
+                  Signed in as
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  {user.email}
+                </Typography>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={handleLogout}
+                  startIcon={<LogOut size={16} />}
+                  sx={{ mt: 1 }}
+                >
+                  Sign Out
+                </Button>
+              </Stack>
+            )}
+          </Stack>
         </Box>
+
         {/* Filter Panel */}
         <FilterPanel
           filter={filter}
