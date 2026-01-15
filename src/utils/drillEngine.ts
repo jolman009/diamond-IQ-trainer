@@ -1,5 +1,5 @@
-import { ScenarioV2 } from '@types/scenario';
-import { DrillSession, AnswerQuality, ensureScenarioProgress } from '@types/drillSession';
+import { ScenarioV2 } from '@/types/scenario';
+import { DrillSession, AnswerQuality, ensureScenarioProgress } from '@/types/drillSession';
 import { updateLeitnerInterval } from '@utils/leitnerAlgorithm';
 
 /**

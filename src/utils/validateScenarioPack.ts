@@ -1,4 +1,4 @@
-import { ScenarioPackSchema, ScenarioV2 } from '@types/scenario';
+import { ScenarioPackSchema, ScenarioV2 } from '@/types/scenario';
 
 /**
  * Validates a scenario pack against the ScenarioV2 schema.
@@ -38,8 +38,12 @@ export function validateScenarioPackSafe(
  * @throws ZodError if validation fails
  */
 export function validateScenario(scenario: unknown): ScenarioV2 {
-  return ScenarioPackSchema.pick({ scenarios: true }).parse({ scenarios: [scenario] })
-    .scenarios[0];
+  const result = ScenarioPackSchema.pick({ scenarios: true }).parse({ scenarios: [scenario] });
+  const validated = result.scenarios[0];
+  if (!validated) {
+    throw new Error('Failed to validate scenario');
+  }
+  return validated;
 }
 
 /**

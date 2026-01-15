@@ -1,4 +1,4 @@
-import { ScenarioPack } from '@types/scenario';
+import { ScenarioPack } from '@/types/scenario';
 
 /**
  * Starter dataset: ~50 carefully curated baseball/softball scenarios

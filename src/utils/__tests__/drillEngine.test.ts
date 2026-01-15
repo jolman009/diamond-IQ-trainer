@@ -10,10 +10,11 @@
  * - BEST + CERTAIN answers increase interval
  * - Timeouts are penalized
  */
+/* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 
-import { ScenarioV2 } from '@types/scenario';
-import { DrillSession, createDrillSession, ensureScenarioProgress } from '@types/drillSession';
-import { pickNextScenario, applyResult, getDrillStats } from '@utils/drillEngine';
+import { ScenarioV2 } from '@/types/scenario';
+import { createDrillSession, ensureScenarioProgress } from '@/types/drillSession';
+import { pickNextScenario, applyResult, getDrillStats } from '@/utils/drillEngine';
 
 // Mock scenarios for testing
 const mockScenario = (id: string): ScenarioV2 => ({

@@ -1,4 +1,4 @@
-import { ScenarioProgress, AnswerQuality } from '@types/drillSession';
+import { ScenarioProgress, AnswerQuality } from '@/types/drillSession';
 
 /**
  * Leitner Box Spacing Algorithm

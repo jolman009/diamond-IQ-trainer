@@ -28,9 +28,5 @@ module.exports = {
       'error',
       { argsIgnorePattern: '^_' },
     ],
-    '@typescript-eslint/explicit-function-return-types': [
-      'warn',
-      { allowExpressions: true },
-    ],
   },
 }
