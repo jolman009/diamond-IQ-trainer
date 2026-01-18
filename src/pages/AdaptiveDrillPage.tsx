@@ -10,7 +10,7 @@ import {
   Button,
   Alert,
 } from '@mui/material';
-import { LogOut, Diamond } from 'lucide-react';
+import { LogOut, Diamond, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DrillPlayer } from '@/components/DrillPlayer';
 import { FilterPanel } from '@/components/FilterPanel';
@@ -176,25 +176,36 @@ export const AdaptiveDrillPage: React.FC = () => {
                 Improve your in-game decision-making with spaced repetition drills.
               </Typography>
             </Box>
-            {user && (
-              <Stack spacing={1} alignItems="flex-end">
-                <Typography variant="caption" color="textSecondary">
-                  Signed in as
-                </Typography>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  {user.email}
-                </Typography>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  onClick={handleLogout}
-                  startIcon={<LogOut size={16} />}
-                  sx={{ mt: 1 }}
-                >
-                  Sign Out
-                </Button>
-              </Stack>
-            )}
+            <Stack spacing={1} alignItems="flex-end">
+              {/* Back to Dashboard Button */}
+              <Button
+                variant="outlined"
+                onClick={() => navigate('/')}
+                startIcon={<ArrowLeft size={18} />}
+                sx={{ mb: 1 }}
+              >
+                Back to Dashboard
+              </Button>
+              {user && (
+                <>
+                  <Typography variant="caption" color="textSecondary">
+                    Signed in as
+                  </Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                    {user.email}
+                  </Typography>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={handleLogout}
+                    startIcon={<LogOut size={16} />}
+                    sx={{ mt: 1 }}
+                  >
+                    Sign Out
+                  </Button>
+                </>
+              )}
+            </Stack>
           </Stack>
         </Box>
 

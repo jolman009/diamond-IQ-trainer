@@ -765,12 +765,753 @@ export const STARTER_DATASET: ScenarioPack = {
       },
       difficulty: 'easy',
     },
+
+    // ========== NEW SCENARIOS: Runner on Third ==========
+    {
+      id: 'baseball-011',
+      version: 2,
+      sport: 'baseball',
+      level: 'high-school',
+      position: 'ss',
+      category: 'runner-3b',
+      title: 'Grounder to Short, Runner on Third, Less Than Two Outs',
+      description:
+        'Runner on third base only, one out. Ground ball hit to the shortstop. Runner is holding at third.',
+      outs: 1,
+      runners: ['3b'],
+      question: 'Where should the shortstop throw?',
+      best: {
+        id: 'baseball-011-best',
+        label: 'Throw to first base for the out',
+        description: 'Get the sure out at first. Runner on third cannot score on this play.',
+        coaching_cue:
+          'With runner on third holding, take the guaranteed out at first. Do not force a play at home.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: '1base',
+          playerMovements: [{ position: '1b', target: '1base' }],
+        },
+      },
+      ok: {
+        id: 'baseball-011-ok',
+        label: 'Check the runner, then throw to first',
+        description: 'Quick glance keeps runner honest, still get the out.',
+        coaching_cue: 'Good awareness to check the runner, but do not hesitate too long.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: '1base',
+          playerMovements: [{ position: '1b', target: '1base' }],
+        },
+      },
+      bad: {
+        id: 'baseball-011-bad',
+        label: 'Throw home immediately',
+        description: 'Runner is not advancing. No play at home.',
+        coaching_cue: 'Read the runner. If he is holding, there is no play at home. Take the out at first.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: 'home',
+        },
+      },
+      difficulty: 'medium',
+    },
+
+    {
+      id: 'baseball-012',
+      version: 2,
+      sport: 'baseball',
+      level: 'college',
+      position: '3b',
+      category: 'runner-3b',
+      title: 'Squeeze Bunt, Runner on Third',
+      description:
+        'Runner on third, one out. Batter squares to bunt. The ball is bunted toward third base. Runner breaks for home.',
+      outs: 1,
+      runners: ['3b'],
+      question: 'What is the third baseman\'s play?',
+      best: {
+        id: 'baseball-012-best',
+        label: 'Field and throw home to get the runner',
+        description: 'Stop the run from scoring. This is a suicide squeeze.',
+        coaching_cue:
+          'On a squeeze, the priority is preventing the run. Quick throw home if you have a play.',
+        animation: {
+          ballStart: 'bunt-3b',
+          ballEnd: 'home',
+          playerMovements: [{ position: '3b', target: 'bunt-3b' }],
+          runnerMovements: [{ from: '3b', to: 'home' }],
+        },
+      },
+      ok: {
+        id: 'baseball-012-ok',
+        label: 'Field and throw to first for the out',
+        description: 'Get the sure out, but the run scores.',
+        coaching_cue: 'If the throw home is not clean, take the out at first. One run is better than bases loaded.',
+        animation: {
+          ballStart: 'bunt-3b',
+          ballEnd: '1base',
+          playerMovements: [{ position: '3b', target: 'bunt-3b' }],
+        },
+      },
+      bad: {
+        id: 'baseball-012-bad',
+        label: 'Hold the ball and watch',
+        description: 'Both runner scores and batter reaches safely.',
+        coaching_cue: 'Never freeze on a squeeze. Make a decision and execute.',
+        animation: {
+          ballStart: 'bunt-3b',
+          ballEnd: '3b',
+        },
+      },
+      difficulty: 'hard',
+    },
+
+    // ========== NEW SCENARIOS: Runners on Second and Third ==========
+    {
+      id: 'baseball-013',
+      version: 2,
+      sport: 'baseball',
+      level: 'high-school',
+      position: 'ss',
+      category: 'runners-2b-3b',
+      title: 'Grounder to Short, Runners on 2nd & 3rd, One Out',
+      description:
+        'Runners on second and third, one out. Ground ball to the shortstop. Infield is playing in to cut off the run.',
+      outs: 1,
+      runners: ['2b', '3b'],
+      question: 'Where is the priority throw?',
+      best: {
+        id: 'baseball-013-best',
+        label: 'Throw home to cut off the run',
+        description: 'With infield in, the priority is preventing the run from scoring.',
+        coaching_cue:
+          'Infield in means run prevention is the priority. Quick throw home if you have a play on the runner.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: 'home',
+          runnerMovements: [{ from: '3b', to: 'home' }],
+        },
+      },
+      ok: {
+        id: 'baseball-013-ok',
+        label: 'Throw to first for the sure out',
+        description: 'Gets an out but allows the run to score.',
+        coaching_cue: 'Acceptable if the throw home is not clean. But understand a run will score.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: '1base',
+          playerMovements: [{ position: '1b', target: '1base' }],
+        },
+      },
+      bad: {
+        id: 'baseball-013-bad',
+        label: 'Throw to third base',
+        description: 'Runner has already left third. No play there.',
+        coaching_cue: 'Third base is empty once the runner breaks. Read the play correctly.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: '3base',
+        },
+      },
+      difficulty: 'hard',
+    },
+
+    {
+      id: 'baseball-014',
+      version: 2,
+      sport: 'baseball',
+      level: 'high-school',
+      position: 'cf',
+      category: 'runners-2b-3b',
+      title: 'Fly Ball to Center, Runners on 2nd & 3rd, One Out',
+      description:
+        'Runners on second and third, one out. Deep fly ball to center field. Both runners tag up.',
+      outs: 1,
+      runners: ['2b', '3b'],
+      question: 'After the catch, where do you throw?',
+      best: {
+        id: 'baseball-014-best',
+        label: 'Throw to home plate',
+        description: 'Try to get the runner tagging from third.',
+        coaching_cue:
+          'Runner on third is the lead runner and will score if you do not throw home. Make a strong, accurate throw.',
+        animation: {
+          ballStart: 'cf',
+          ballEnd: 'home',
+          runnerMovements: [{ from: '3b', to: 'home' }],
+        },
+      },
+      ok: {
+        id: 'baseball-014-ok',
+        label: 'Throw to third base',
+        description: 'Try to get the runner advancing from second.',
+        coaching_cue: 'If the run is conceded, you can try for the out at third on the trailing runner.',
+        animation: {
+          ballStart: 'cf',
+          ballEnd: '3base',
+          playerMovements: [{ position: '3b', target: '3base' }],
+          runnerMovements: [{ from: '2b', to: '3b' }],
+        },
+      },
+      bad: {
+        id: 'baseball-014-bad',
+        label: 'Throw to second base',
+        description: 'No runner is going to second. Wasted throw.',
+        coaching_cue: 'Read the runners. Both are advancing toward home, not retreating.',
+        animation: {
+          ballStart: 'cf',
+          ballEnd: '2base',
+        },
+      },
+      difficulty: 'medium',
+    },
+
+    // ========== NEW SCENARIOS: Runners on First and Second ==========
+    {
+      id: 'baseball-015',
+      version: 2,
+      sport: 'baseball',
+      level: 'high-school',
+      position: '3b',
+      category: 'runners-1b-2b',
+      title: 'Grounder to Third, Runners on 1st & 2nd, No Outs',
+      description:
+        'Runners on first and second, no outs. Sharp grounder to third base. Classic bunt/DP situation.',
+      outs: 0,
+      runners: ['1b', '2b'],
+      question: 'Where is the best throw?',
+      best: {
+        id: 'baseball-015-best',
+        label: 'Step on third and throw to first for double play',
+        description: 'Force at third, then relay to first for the double play.',
+        coaching_cue:
+          'With runners on first and second, you have a force at third. Step on the bag and complete the DP.',
+        animation: {
+          ballStart: '3b',
+          ballEnd: '3base',
+          playerMovements: [{ position: '1b', target: '1base' }],
+        },
+      },
+      ok: {
+        id: 'baseball-015-ok',
+        label: 'Throw to second base for the force',
+        description: 'Gets one out and starts a potential DP through second.',
+        coaching_cue: 'Alternative DP route. Works but stepping on third is more direct.',
+        animation: {
+          ballStart: '3b',
+          ballEnd: '2base',
+          playerMovements: [{ position: 'ss', target: '2base' }],
+        },
+      },
+      bad: {
+        id: 'baseball-015-bad',
+        label: 'Throw directly to first',
+        description: 'Only gets one out, runners advance to second and third.',
+        coaching_cue: 'With force plays available at multiple bases, maximize outs. Do not settle for one.',
+        animation: {
+          ballStart: '3b',
+          ballEnd: '1base',
+          playerMovements: [{ position: '1b', target: '1base' }],
+        },
+      },
+      difficulty: 'medium',
+    },
+
+    // ========== NEW SCENARIOS: Bases Loaded Additional ==========
+    {
+      id: 'baseball-016',
+      version: 2,
+      sport: 'baseball',
+      level: 'college',
+      position: 'ss',
+      category: 'bases-loaded',
+      title: 'Grounder to Short, Bases Loaded, Two Outs',
+      description:
+        'Bases loaded, two outs. Ground ball to the shortstop. Any force out ends the inning.',
+      outs: 2,
+      runners: ['1b', '2b', '3b'],
+      question: 'Where should you throw?',
+      best: {
+        id: 'baseball-016-best',
+        label: 'Throw to second base for the force',
+        description: 'Shortest throw, highest percentage. Ends the inning.',
+        coaching_cue:
+          'With two outs and bases loaded, any force ends it. Second base is the closest and safest throw.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: '2base',
+          playerMovements: [{ position: '2b', target: '2base' }],
+        },
+      },
+      ok: {
+        id: 'baseball-016-ok',
+        label: 'Throw to third base for the force',
+        description: 'Gets the out, but longer throw than second.',
+        coaching_cue: 'Still ends the inning, just a slightly longer throw. Acceptable.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: '3base',
+          playerMovements: [{ position: '3b', target: '3base' }],
+        },
+      },
+      bad: {
+        id: 'baseball-016-bad',
+        label: 'Throw home',
+        description: 'Longest throw with highest risk of error.',
+        coaching_cue: 'Home is the longest throw. Why risk it when second is so close?',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: 'home',
+        },
+      },
+      difficulty: 'medium',
+    },
+
+    {
+      id: 'baseball-017',
+      version: 2,
+      sport: 'baseball',
+      level: 'high-school',
+      position: '1b',
+      category: 'bases-loaded',
+      title: 'Grounder to First, Bases Loaded, No Outs',
+      description:
+        'Bases loaded, no outs. Sharp grounder hit directly to the first baseman. Multiple force plays available.',
+      outs: 0,
+      runners: ['1b', '2b', '3b'],
+      question: 'What is the first baseman\'s best play?',
+      best: {
+        id: 'baseball-017-best',
+        label: 'Step on first, then throw home for double play',
+        description: 'Remove the force at home, then tag the runner trying to score.',
+        coaching_cue:
+          'Step on first for the force, eliminating the runner behind you. Then throw home where catcher can tag the runner.',
+        animation: {
+          ballStart: '1b',
+          ballEnd: '1base',
+          playerMovements: [{ position: 'c', target: 'home' }],
+        },
+      },
+      ok: {
+        id: 'baseball-017-ok',
+        label: 'Throw home for the force, then back to first',
+        description: 'Gets the home-to-first double play.',
+        coaching_cue: 'Works, but stepping on first yourself is more reliable.',
+        animation: {
+          ballStart: '1b',
+          ballEnd: 'home',
+        },
+      },
+      bad: {
+        id: 'baseball-017-bad',
+        label: 'Throw to second for the 3-6-3 double play',
+        description: 'Overly complicated. Allows runner on third to score.',
+        coaching_cue: 'Do not ignore the run. First-to-home DP prevents the run and gets two outs.',
+        animation: {
+          ballStart: '1b',
+          ballEnd: '2base',
+          playerMovements: [{ position: 'ss', target: '2base' }],
+        },
+      },
+      difficulty: 'hard',
+    },
+
+    // ========== NEW SOFTBALL SCENARIOS ==========
+    {
+      id: 'softball-006',
+      version: 2,
+      sport: 'softball',
+      level: 'high-school',
+      position: 'rf',
+      category: 'runner-3b',
+      title: 'Fly Ball to Right, Runner on Third, Less Than Two Outs',
+      description:
+        'Runner on third, one out. Fly ball to right field. The runner will tag up and try to score.',
+      outs: 1,
+      runners: ['3b'],
+      question: 'After catching the ball, where do you throw?',
+      best: {
+        id: 'softball-006-best',
+        label: 'Throw home to get the tagging runner',
+        description: 'Strong throw to home plate to beat the runner.',
+        coaching_cue:
+          'Sac fly situation. Runner tags and goes. Your job is to make an accurate throw home.',
+        animation: {
+          ballStart: 'rf',
+          ballEnd: 'home',
+          runnerMovements: [{ from: '3b', to: 'home' }],
+        },
+      },
+      ok: {
+        id: 'softball-006-ok',
+        label: 'Throw to the cutoff (second baseman)',
+        description: 'Use the cutoff if you cannot make a direct throw home.',
+        coaching_cue: 'If arm strength is not there, hit the cutoff and let them relay.',
+        animation: {
+          ballStart: 'rf',
+          ballEnd: '2b',
+          playerMovements: [{ position: '2b', target: 'p' }],
+        },
+      },
+      bad: {
+        id: 'softball-006-bad',
+        label: 'Hold the ball',
+        description: 'Runner scores easily with no challenge.',
+        coaching_cue: 'Always challenge the runner. Make them prove they can beat your throw.',
+        animation: {
+          ballStart: 'rf',
+          ballEnd: 'rf',
+        },
+      },
+      difficulty: 'medium',
+    },
+
+    {
+      id: 'softball-007',
+      version: 2,
+      sport: 'softball',
+      level: 'college',
+      position: 'c',
+      category: 'runners-2b-3b',
+      title: 'Passed Ball, Runners on 2nd & 3rd',
+      description:
+        'Runners on second and third, one out. Pitch gets past the catcher. Both runners advance.',
+      outs: 1,
+      runners: ['2b', '3b'],
+      question: 'What is the catcher\'s priority?',
+      best: {
+        id: 'softball-007-best',
+        label: 'Retrieve ball, throw to pitcher covering home',
+        description: 'Try to get the runner from third if there is a play.',
+        coaching_cue:
+          'On a passed ball, retrieve quickly. If you have a play at home, take it. Pitcher should cover.',
+        animation: {
+          ballStart: 'c',
+          ballEnd: 'home',
+          playerMovements: [{ position: 'p', target: 'home' }],
+        },
+      },
+      ok: {
+        id: 'softball-007-ok',
+        label: 'Retrieve ball and hold',
+        description: 'Concede the run if no play is available.',
+        coaching_cue: 'If the throw is not there, eat the ball. Do not compound the error.',
+        animation: {
+          ballStart: 'c',
+          ballEnd: 'c',
+        },
+      },
+      bad: {
+        id: 'softball-007-bad',
+        label: 'Throw to third base',
+        description: 'Runner from third is going home, not back to third.',
+        coaching_cue: 'Read the runners. Third is vacated—no play there.',
+        animation: {
+          ballStart: 'c',
+          ballEnd: '3base',
+        },
+      },
+      difficulty: 'hard',
+    },
+
+    {
+      id: 'softball-008',
+      version: 2,
+      sport: 'softball',
+      level: 'high-school',
+      position: 'ss',
+      category: 'bases-loaded',
+      title: 'Line Drive to Short, Bases Loaded, One Out',
+      description:
+        'Bases loaded, one out. Line drive caught by the shortstop. Runners frozen on bases.',
+      outs: 1,
+      runners: ['1b', '2b', '3b'],
+      question: 'After catching the line drive, what do you do?',
+      best: {
+        id: 'softball-008-best',
+        label: 'Step on second base for the unassisted double play',
+        description: 'Runner on second cannot get back. Easy double play.',
+        coaching_cue:
+          'Line drive freezes runners. Step on second to double off the runner who left early.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: '2base',
+        },
+      },
+      ok: {
+        id: 'softball-008-ok',
+        label: 'Throw to third base to double off the runner',
+        description: 'Gets the double play, but requires a throw.',
+        coaching_cue: 'Works, but stepping on second is easier if you are closer.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: '3base',
+          playerMovements: [{ position: '3b', target: '3base' }],
+        },
+      },
+      bad: {
+        id: 'softball-008-bad',
+        label: 'Throw home',
+        description: 'Runner on third was frozen and is safe. No play there.',
+        coaching_cue: 'Runners freeze on line drives. Look for the double play, not the tag.',
+        animation: {
+          ballStart: 'ss',
+          ballEnd: 'home',
+        },
+      },
+      difficulty: 'medium',
+    },
+
+    {
+      id: 'softball-009',
+      version: 2,
+      sport: 'softball',
+      level: 'high-school',
+      position: '2b',
+      category: 'runner-1b',
+      title: 'Steal Attempt, Runner on First',
+      description:
+        'Runner on first, one out. The runner breaks for second on the pitch. Catcher throws to second.',
+      outs: 1,
+      runners: ['1b'],
+      question: 'As the second baseman, what is your responsibility?',
+      best: {
+        id: 'softball-009-best',
+        label: 'Cover second base and receive the throw',
+        description: 'Standard coverage. Second baseman takes the throw on a steal.',
+        coaching_cue:
+          'On a steal to second from the right side, 2B typically covers. Get to the bag and make the tag.',
+        animation: {
+          ballStart: 'c',
+          ballEnd: '2base',
+          playerMovements: [{ position: '2b', target: '2base' }],
+        },
+      },
+      ok: {
+        id: 'softball-009-ok',
+        label: 'Let the shortstop cover while you back up',
+        description: 'Coverage by SS works, but 2B should be primary.',
+        coaching_cue: 'Communication is key. If SS calls it, back them up. But default is 2B covers.',
+        animation: {
+          ballStart: 'c',
+          ballEnd: '2base',
+          playerMovements: [{ position: 'ss', target: '2base' }],
+        },
+      },
+      bad: {
+        id: 'softball-009-bad',
+        label: 'Stay in position, let the ball go through',
+        description: 'No one covers. Runner takes the base easily.',
+        coaching_cue: 'Someone must cover on a steal. Never let a base go undefended.',
+        animation: {
+          ballStart: 'c',
+          ballEnd: 'cf',
+        },
+      },
+      difficulty: 'easy',
+    },
+
+    {
+      id: 'softball-010',
+      version: 2,
+      sport: 'softball',
+      level: 'college',
+      position: 'lf',
+      category: 'runners-1b-3b',
+      title: 'Single to Left, Runners on 1st & 3rd',
+      description:
+        'Runners on first and third, one out. Clean single to left field. Runner on third scores easily.',
+      outs: 1,
+      runners: ['1b', '3b'],
+      question: 'Where should the left fielder throw?',
+      best: {
+        id: 'softball-010-best',
+        label: 'Throw to second base through the cutoff',
+        description: 'Keep the trailing runner at first from taking second.',
+        coaching_cue:
+          'Run from third scores. Focus on the runner from first—do not let them take an extra base.',
+        animation: {
+          ballStart: 'lf',
+          ballEnd: '2base',
+          playerMovements: [{ position: 'ss', target: '2base' }],
+        },
+      },
+      ok: {
+        id: 'softball-010-ok',
+        label: 'Throw home (even though runner scored)',
+        description: 'Cut the ball home in case of a play on trailing runners.',
+        coaching_cue: 'If another runner tries to advance home, be ready. But primary play is second.',
+        animation: {
+          ballStart: 'lf',
+          ballEnd: 'home',
+        },
+      },
+      bad: {
+        id: 'softball-010-bad',
+        label: 'Hold the ball in the outfield',
+        description: 'Allows runners to take extra bases without challenge.',
+        coaching_cue: 'Always get the ball back to the infield. Challenge every runner.',
+        animation: {
+          ballStart: 'lf',
+          ballEnd: 'lf',
+        },
+      },
+      difficulty: 'medium',
+    },
+
+    // ========== More Bases Empty Scenarios ==========
+    {
+      id: 'baseball-018',
+      version: 2,
+      sport: 'baseball',
+      level: 'high-school',
+      position: '3b',
+      category: 'bases-empty',
+      title: 'Bunt Down Third Base Line, Bases Empty',
+      description:
+        'Bases empty, no outs. Batter bunts the ball down the third base line. Ball is rolling fair.',
+      outs: 0,
+      runners: [],
+      question: 'What is the third baseman\'s play?',
+      best: {
+        id: 'baseball-018-best',
+        label: 'Field and throw to first for the out',
+        description: 'Routine bunt fielding. Get the out at first.',
+        coaching_cue:
+          'Charge the bunt, field cleanly, and make an accurate throw to first. Routine play.',
+        animation: {
+          ballStart: 'bunt-3b',
+          ballEnd: '1base',
+          playerMovements: [{ position: '3b', target: 'bunt-3b' }],
+        },
+      },
+      ok: {
+        id: 'baseball-018-ok',
+        label: 'Let the pitcher field it',
+        description: 'Pitcher can make the play if closer.',
+        coaching_cue: 'Communication matters. If pitcher has a better angle, let them take it.',
+        animation: {
+          ballStart: 'bunt-3b',
+          ballEnd: '1base',
+          playerMovements: [{ position: 'p', target: 'bunt-3b' }],
+        },
+      },
+      bad: {
+        id: 'baseball-018-bad',
+        label: 'Let it roll hoping it goes foul',
+        description: 'Ball may stay fair, batter reaches safely.',
+        coaching_cue: 'Never gamble on foul balls. Field the ball and make the play.',
+        animation: {
+          ballStart: 'bunt-3b',
+          ballEnd: 'bunt-3b',
+        },
+      },
+      difficulty: 'easy',
+    },
+
+    {
+      id: 'baseball-019',
+      version: 2,
+      sport: 'baseball',
+      level: 'college',
+      position: 'cf',
+      category: 'bases-empty',
+      title: 'Gap Shot to Center, Bases Empty, Two Outs',
+      description:
+        'Bases empty, two outs. Ball hit in the gap between center and left field. Batter-runner rounding first hard.',
+      outs: 2,
+      runners: [],
+      question: 'As the center fielder, what is your play?',
+      best: {
+        id: 'baseball-019-best',
+        label: 'Field and throw to second through the cutoff',
+        description: 'Hold the runner to a single if possible.',
+        coaching_cue:
+          'Get to the ball quickly, hit your cutoff man aligned to second. Keep it a single.',
+        animation: {
+          ballStart: 'cf',
+          ballEnd: '2base',
+          playerMovements: [{ position: 'ss', target: '2base' }],
+        },
+      },
+      ok: {
+        id: 'baseball-019-ok',
+        label: 'Field and throw directly to second',
+        description: 'Skip the cutoff if you have a strong, accurate arm.',
+        coaching_cue: 'Direct throw works with a strong arm, but cutoff is safer.',
+        animation: {
+          ballStart: 'cf',
+          ballEnd: '2base',
+        },
+      },
+      bad: {
+        id: 'baseball-019-bad',
+        label: 'Lob the ball back to the infield',
+        description: 'Runner takes second easily, maybe third.',
+        coaching_cue: 'Urgency matters. Two outs means get outs, not allow extra bases.',
+        animation: {
+          ballStart: 'cf',
+          ballEnd: 'ss',
+        },
+      },
+      difficulty: 'medium',
+    },
+
+    {
+      id: 'baseball-020',
+      version: 2,
+      sport: 'baseball',
+      level: 'high-school',
+      position: 'p',
+      category: 'runner-2b',
+      title: 'Comebacker to Pitcher, Runner on Second',
+      description:
+        'Runner on second, one out. Ground ball hit back to the pitcher. Runner holds at second.',
+      outs: 1,
+      runners: ['2b'],
+      question: 'Where should the pitcher throw?',
+      best: {
+        id: 'baseball-020-best',
+        label: 'Throw to first base for the out',
+        description: 'Get the sure out. Runner is not advancing.',
+        coaching_cue:
+          'With runner holding at second, take the guaranteed out at first. Simple play.',
+        animation: {
+          ballStart: 'p',
+          ballEnd: '1base',
+          playerMovements: [{ position: '1b', target: '1base' }],
+        },
+      },
+      ok: {
+        id: 'baseball-020-ok',
+        label: 'Check the runner then throw to first',
+        description: 'Quick glance keeps runner honest.',
+        coaching_cue: 'Good awareness, but do not waste time. Get the out.',
+        animation: {
+          ballStart: 'p',
+          ballEnd: '1base',
+          playerMovements: [{ position: '1b', target: '1base' }],
+        },
+      },
+      bad: {
+        id: 'baseball-020-bad',
+        label: 'Throw to third base',
+        description: 'No force at third. Runner would need to be tagged.',
+        coaching_cue: 'No force exists at third with only a runner on second. Take the out at first.',
+        animation: {
+          ballStart: 'p',
+          ballEnd: '3base',
+          playerMovements: [{ position: '3b', target: '3base' }],
+        },
+      },
+      difficulty: 'easy',
+    },
   ],
 
   metadata: {
     name: 'Starter Dataset',
     description:
-      'Initial set of 10 high-quality, high-school to college level scenarios for baseball and softball.',
+      'Comprehensive set of 30 high-quality, high-school to college level scenarios for baseball and softball.',
     sport: 'baseball', // primary sport for the starter set
     levels: ['high-school', 'college'],
   },
