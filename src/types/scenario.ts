@@ -32,7 +32,10 @@ export const AnimationLocationEnum = z.enum([
   'home', '1base', '2base', '3base',
   'bunt-1b', 'bunt-3b', // Bunt zones on foul lines
   'bunt-1b-inside', 'bunt-3b-inside', // Between foul line and mound (backup positions)
-  'backup-3b', 'backup-1b' // Behind the bases in foul territory (for backing up plays)
+  'backup-3b', 'backup-1b', // Behind the bases in foul territory (for backing up plays)
+  'backup-rf-foul', // RF backup position: 20-30 ft behind 1B on foul line (bunt coverage)
+  'backup-lf-foul', // LF backup position: 20-30 ft behind 3B on foul line (bunt coverage)
+  'backup-cf-shallow' // CF shallow backup position: behind 2B area (bunt coverage)
 ]);
 export type AnimationLocation = z.infer<typeof AnimationLocationEnum>;
 

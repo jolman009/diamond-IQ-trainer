@@ -48,12 +48,13 @@ export const LandingPage: React.FC = () => {
         }}
       />
 
-      {/* Ambient glow behind logo */}
-      <motion.div
-        style={{
+      {/* Ambient glow behind logo - responsive sizing */}
+      <Box
+        component={motion.div}
+        sx={{
           position: 'absolute',
-          width: '400px',
-          height: '400px',
+          width: { xs: '250px', sm: '320px', md: '400px' },
+          height: { xs: '250px', sm: '320px', md: '400px' },
           borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(25, 118, 210, 0.15) 0%, transparent 70%)',
         }}
@@ -124,7 +125,7 @@ export const LandingPage: React.FC = () => {
           sx={{
             mt: 1,
             color: 'rgba(255, 255, 255, 0.6)',
-            fontSize: '1.1rem',
+            fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' },
             letterSpacing: '0.05em',
             position: 'relative',
             zIndex: 1,
@@ -248,17 +249,25 @@ export const LandingPage: React.FC = () => {
 
 /**
  * Large animated logo for landing page with Framer Motion
+ * Responsive sizing: 120px on mobile, 150px on tablet, 180px on desktop
  */
 const LandingLogo: React.FC = () => {
   return (
-    <motion.svg
-      width="180"
-      height="180"
-      viewBox="0 0 64 64"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-label="Diamond IQ Logo"
+    <Box
+      component={motion.div}
+      sx={{
+        width: { xs: 120, sm: 150, md: 180 },
+        height: { xs: 120, sm: 150, md: 180 },
+      }}
     >
+      <motion.svg
+        width="100%"
+        height="100%"
+        viewBox="0 0 64 64"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-label="Diamond IQ Logo"
+      >
       <defs>
         {/* Primary gradient for outer diamond */}
         <linearGradient id="landingDiamondGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -486,6 +495,7 @@ const LandingLogo: React.FC = () => {
           ease: 'easeInOut',
         }}
       />
-    </motion.svg>
+      </motion.svg>
+    </Box>
   );
 };

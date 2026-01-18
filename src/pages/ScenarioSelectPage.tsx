@@ -249,24 +249,30 @@ export const ScenarioSelectPage: React.FC = () => {
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 4 }}>
       <Container maxWidth="lg">
         {/* Header */}
-        <Box sx={{ mb: 4 }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+        <Box sx={{ mb: { xs: 2, md: 4 } }}>
+          <Stack
+            direction={{ xs: 'column', md: 'row' }}
+            justifyContent="space-between"
+            alignItems={{ xs: 'flex-start', md: 'flex-start' }}
+            spacing={{ xs: 2, md: 0 }}
+          >
             <Box>
               <DiamondIQLogo />
-              <Typography variant="h5" sx={{ mt: 2, fontWeight: 600 }}>
+              <Typography variant="h5" sx={{ mt: 2, fontWeight: 600, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>
                 Scenario Browser
               </Typography>
-              <Typography variant="body1" color="textSecondary">
+              <Typography variant="body1" color="textSecondary" sx={{ fontSize: { xs: '0.875rem', md: '1rem' } }}>
                 Select a base runner situation, outs, and fielding position to find specific scenarios.
               </Typography>
             </Box>
-            <Stack spacing={1} alignItems="flex-end">
+            <Stack spacing={1} alignItems={{ xs: 'flex-start', md: 'flex-end' }} sx={{ width: { xs: '100%', md: 'auto' } }}>
               {/* Action Buttons */}
-              <Stack direction="row" spacing={1}>
+              <Stack direction="row" spacing={1} sx={{ width: { xs: '100%', md: 'auto' } }}>
                 <Button
                   variant="contained"
                   onClick={() => navigate('/drill')}
                   startIcon={<Zap size={18} />}
+                  sx={{ flex: { xs: 1, md: 'none' } }}
                 >
                   Adaptive Drill
                 </Button>
@@ -274,6 +280,7 @@ export const ScenarioSelectPage: React.FC = () => {
                   variant="outlined"
                   onClick={() => navigate('/progress')}
                   startIcon={<BarChart3 size={18} />}
+                  sx={{ flex: { xs: 1, md: 'none' } }}
                 >
                   Progress
                 </Button>
@@ -437,7 +444,7 @@ export const ScenarioSelectPage: React.FC = () => {
               </Typography>
             </Box>
           ) : (
-            <List sx={{ maxHeight: 500, overflow: 'auto' }}>
+            <List sx={{ maxHeight: { xs: 350, sm: 400, md: 500 }, overflow: 'auto' }}>
               {filteredScenarios.map((scenario, index) => (
                 <React.Fragment key={scenario.id}>
                   {index > 0 && <Divider />}

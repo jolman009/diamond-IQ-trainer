@@ -155,7 +155,7 @@ export const ScenarioPreviewPage: React.FC = () => {
       <Grid container spacing={3}>
         {/* Scenario List */}
         <Grid item xs={12} md={4} lg={3}>
-          <Paper sx={{ height: 'calc(100vh - 250px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <Paper sx={{ height: { xs: 'calc(100vh - 200px)', md: 'calc(100vh - 250px)' }, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
             <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
               <TextField
                 fullWidth
@@ -241,9 +241,9 @@ export const ScenarioPreviewPage: React.FC = () => {
                     sx={{
                       bgcolor: '#f0f4f8',
                       borderRadius: 2,
-                      p: 2,
+                      p: { xs: 1, md: 2 },
                       aspectRatio: '1/1',
-                      maxHeight: 500,
+                      maxHeight: { xs: 300, sm: 400, md: 500 },
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',

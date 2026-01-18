@@ -482,7 +482,7 @@ export const ProgressPage: React.FC = () => {
             </Stack>
           </Box>
 
-          <TableContainer sx={{ maxHeight: 500 }}>
+          <TableContainer sx={{ maxHeight: { xs: 350, sm: 400, md: 500 } }}>
             <Table stickyHeader size="small">
               <TableHead>
                 <TableRow>

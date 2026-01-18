@@ -69,6 +69,10 @@ export const BaseballField: React.FC<BaseballFieldProps> = ({
       // Behind the bases in foul territory (for backing up plays)
       case 'backup-3b': return { x: 12, y: 48 };
       case 'backup-1b': return { x: 88, y: 48 };
+      // Outfield backup positions for bunt coverage
+      case 'backup-rf-foul': return { x: 90, y: 45 }; // RF: 20-30ft behind 1B on foul line
+      case 'backup-lf-foul': return { x: 10, y: 45 }; // LF: 20-30ft behind 3B on foul line
+      case 'backup-cf-shallow': return { x: 50, y: 18 }; // CF: shallow behind 2B area
       default: return { x: 50, y: 50 };
     }
   };
