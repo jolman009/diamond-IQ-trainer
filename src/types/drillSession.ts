@@ -25,6 +25,7 @@ export interface DrillSession {
   createdAt: number; // timestamp
   updatedAt: number; // timestamp
   progress: Record<string, ScenarioProgress>; // scenarioId -> progress
+  bestStreak?: number; // best streak of consecutive correct answers
 }
 
 /**

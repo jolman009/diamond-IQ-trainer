@@ -122,6 +122,28 @@ export function applyResult(
 
   // Update session timestamp
   session.updatedAt = Date.now();
+
+  // Update best streak if current answer is 'best'
+  if (quality === 'best') {
+    // Calculate current streak after this answer
+    const recentAnswers: { time: number; quality: string }[] = [];
+    for (const id in session.progress) {
+      const p = session.progress[id];
+      if (p && p.lastShown && p.lastAnswer) {
+        recentAnswers.push({ time: p.lastShown, quality: p.lastAnswer });
+      }
+    }
+    recentAnswers.sort((a, b) => b.time - a.time);
+    let currentStreak = 0;
+    for (const answer of recentAnswers) {
+      if (answer.quality === 'best') {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+    session.bestStreak = Math.max(session.bestStreak || 0, currentStreak);
+  }
 }
 
 /**
@@ -134,6 +156,8 @@ export interface DrillStats {
   correctRate: number;
   averageEase: number;
   averageInterval: number;
+  currentStreak: number;
+  bestStreak: number;
 }
 
 export function getDrillStats(scenarios: ScenarioV2[], session: DrillSession): DrillStats {
@@ -143,6 +167,9 @@ export function getDrillStats(scenarios: ScenarioV2[], session: DrillSession): D
   let totalEase = 0;
   let totalInterval = 0;
 
+  // Collect all attempts with timestamps for streak calculation
+  const recentAnswers: { time: number; quality: string }[] = [];
+
   for (const scenario of scenarios) {
     const progress = ensureScenarioProgress(session, scenario.id);
     if (progress.repetitions > 0) {
@@ -151,8 +178,30 @@ export function getDrillStats(scenarios: ScenarioV2[], session: DrillSession): D
       totalCorrect += progress.correct;
       totalEase += progress.ease;
       totalInterval += progress.interval;
+
+      // Track most recent answer for streak
+      if (progress.lastShown && progress.lastAnswer) {
+        recentAnswers.push({
+          time: progress.lastShown,
+          quality: progress.lastAnswer,
+        });
+      }
     }
   }
+
+  // Sort by most recent first and calculate current streak
+  recentAnswers.sort((a, b) => b.time - a.time);
+  let currentStreak = 0;
+  for (const answer of recentAnswers) {
+    if (answer.quality === 'best') {
+      currentStreak++;
+    } else {
+      break;
+    }
+  }
+
+  // Calculate best streak from session history (stored in session)
+  const bestStreak = Math.max(currentStreak, session.bestStreak || 0);
 
   return {
     totalScenarios: scenarios.length,
@@ -161,5 +210,7 @@ export function getDrillStats(scenarios: ScenarioV2[], session: DrillSession): D
     correctRate: totalAttempts === 0 ? 0 : totalCorrect / totalAttempts,
     averageEase: seen === 0 ? 2.5 : totalEase / seen,
     averageInterval: seen === 0 ? 1 : totalInterval / seen,
+    currentStreak,
+    bestStreak,
   };
 }

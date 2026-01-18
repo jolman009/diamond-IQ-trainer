@@ -9,8 +9,14 @@ import {
   LinearProgress,
   Button,
   Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Chip,
 } from '@mui/material';
-import { LogOut, Diamond, ArrowLeft } from 'lucide-react';
+import { LogOut, Diamond, ArrowLeft, Flame } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DrillPlayer } from '@/components/DrillPlayer';
 import { FilterPanel } from '@/components/FilterPanel';
@@ -55,6 +61,7 @@ export const AdaptiveDrillPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [noScenariosAvailable, setNoScenariosAvailable] = useState(false);
   const [filter, setFilter] = useState<ScenarioFilter>(createEmptyFilter());
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -136,7 +143,11 @@ export const AdaptiveDrillPage: React.FC = () => {
     }, 300);
   };
 
-  const handleResetSession = () => {
+  const handleResetClick = () => {
+    setResetDialogOpen(true);
+  };
+
+  const handleResetConfirm = () => {
     clearSessionFromLocalStorage();
     const newSession = createDrillSession('adaptive-session');
     setSession(newSession);
@@ -145,9 +156,14 @@ export const AdaptiveDrillPage: React.FC = () => {
       setCurrentScenario(next);
       setNoScenariosAvailable(false);
     }
+    setResetDialogOpen(false);
   };
 
-  const stats = session ? getDrillStats(filteredScenarios, session) : { correctRate: 0, scenariosSeen: 0, totalAttempts: 0, averageEase: 1.3, averageInterval: 0 };
+  const handleResetCancel = () => {
+    setResetDialogOpen(false);
+  };
+
+  const stats = session ? getDrillStats(filteredScenarios, session) : { correctRate: 0, scenariosSeen: 0, totalAttempts: 0, averageEase: 1.3, averageInterval: 0, currentStreak: 0, bestStreak: 0 };
 
   // Get unique values for filter dropdowns
   const sports = getUniqueValues(STARTER_DATASET.scenarios, 'sport') as Sport[];
@@ -223,7 +239,35 @@ export const AdaptiveDrillPage: React.FC = () => {
         {/* Session Stats Card */}
         <Card sx={{ mb: 4 }}>
           <CardContent>
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} alignItems={{ xs: 'stretch', sm: 'center' }}>
+              {/* Current Streak - Highlighted */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Chip
+                  icon={<Flame size={18} color={stats.currentStreak > 0 ? '#ff6b35' : undefined} />}
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700, color: stats.currentStreak > 0 ? 'warning.main' : 'text.secondary' }}>
+                        {stats.currentStreak}
+                      </Typography>
+                      <Typography variant="caption" color="textSecondary">streak</Typography>
+                    </Box>
+                  }
+                  variant={stats.currentStreak > 0 ? 'filled' : 'outlined'}
+                  sx={{
+                    bgcolor: stats.currentStreak > 0 ? 'warning.lighter' : 'transparent',
+                    borderColor: stats.currentStreak > 0 ? 'warning.main' : 'divider',
+                    height: 'auto',
+                    py: 0.5,
+                    '& .MuiChip-label': { px: 1 },
+                  }}
+                />
+                {stats.bestStreak > 0 && (
+                  <Typography variant="caption" color="textSecondary" sx={{ whiteSpace: 'nowrap' }}>
+                    Best: {stats.bestStreak}
+                  </Typography>
+                )}
+              </Box>
+
               {/* Correct Rate */}
               <Box sx={{ flex: 1 }}>
                 <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600, display: 'block', mb: 1 }}>
@@ -282,7 +326,7 @@ export const AdaptiveDrillPage: React.FC = () => {
             <Typography variant="body2" sx={{ mb: 1 }}>
               All scenarios are rested. Come back later to keep drilling!
             </Typography>
-            <Button variant="outlined" size="small" onClick={handleResetSession} sx={{ mt: 1 }}>
+            <Button variant="outlined" size="small" onClick={handleResetClick} sx={{ mt: 1 }}>
               Start New Session
             </Button>
           </Alert>
@@ -294,6 +338,7 @@ export const AdaptiveDrillPage: React.FC = () => {
             scenario={currentScenario}
             onAnswer={handleAnswer}
             isLoading={isLoading}
+            currentStreak={stats.currentStreak}
           />
         )}
 
@@ -302,12 +347,32 @@ export const AdaptiveDrillPage: React.FC = () => {
           <Button
             variant="text"
             color="inherit"
-            onClick={handleResetSession}
+            onClick={handleResetClick}
             sx={{ fontWeight: 600, textDecoration: 'underline' }}
           >
             Reset Session
           </Button>
         </Box>
+
+        {/* Reset Confirmation Dialog */}
+        <Dialog open={resetDialogOpen} onClose={handleResetCancel}>
+          <DialogTitle>Reset Session?</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              This will clear all your progress, including your {stats.totalAttempts} attempts,{' '}
+              {stats.scenariosSeen} scenarios seen, and your best streak of {stats.bestStreak}.
+              This action cannot be undone.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleResetCancel} color="inherit">
+              Cancel
+            </Button>
+            <Button onClick={handleResetConfirm} color="error" variant="contained">
+              Reset
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Container>
     </Box>
   );

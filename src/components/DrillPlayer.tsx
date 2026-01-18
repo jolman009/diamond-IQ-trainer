@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Card,
@@ -12,16 +12,20 @@ import {
   Paper,
   Alert,
   IconButton,
+  Switch,
+  FormControlLabel,
 } from '@mui/material';
-import { RotateCcw, Play, Pause } from 'lucide-react';
+import { RotateCcw, Play, Pause, Flame } from 'lucide-react';
 import { ScenarioV2, Position, AnswerAnimation } from '@/types/scenario';
 import { AnswerQuality } from '@/types/drillSession';
 import { BaseballField } from './BaseballField';
+import { playAnswerSound } from '@/utils/sounds';
 
 interface DrillPlayerProps {
   scenario: ScenarioV2;
   onAnswer: (quality: AnswerQuality) => void;
   isLoading?: boolean;
+  currentStreak?: number;
 }
 
 /**
@@ -43,17 +47,19 @@ export const DrillPlayer: React.FC<DrillPlayerProps> = ({
   scenario,
   onAnswer,
   isLoading = false,
+  currentStreak = 0,
 }) => {
   const [phase, setPhase] = useState<'answering' | 'revealing'>('answering');
   const [selectedQuality, setSelectedQuality] = useState<AnswerQuality | null>(null);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [practiceMode, setPracticeMode] = useState(false);
   const maxTime = 30; // seconds for pressure element
 
-  // Timer logic
+  // Timer logic - disabled in practice mode
   useEffect(() => {
-    if (phase !== 'answering' || isPaused) return;
+    if (phase !== 'answering' || isPaused || practiceMode) return;
 
     const interval = setInterval(() => {
       setTimeElapsed((prev) => {
@@ -66,7 +72,7 @@ export const DrillPlayer: React.FC<DrillPlayerProps> = ({
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [phase, isPaused]);
+  }, [phase, isPaused, practiceMode]);
 
   // Reset state when scenario changes
   useEffect(() => {
@@ -77,27 +83,81 @@ export const DrillPlayer: React.FC<DrillPlayerProps> = ({
     setIsPaused(false);
   }, [scenario.id]);
 
+  // Handler functions
   const handleAnswerClick = (quality: AnswerQuality) => {
     setSelectedQuality(quality);
     setPhase('revealing');
     setIsAnimating(true);
+    playAnswerSound(quality);
   };
 
   const handleTimeout = () => {
     setSelectedQuality('timeout');
     setPhase('revealing');
     setIsAnimating(true);
+    playAnswerSound('timeout');
   };
 
-  const handleNextScenario = () => {
+  const handleNextScenario = useCallback(() => {
     if (!selectedQuality) return;
     onAnswer(selectedQuality);
-  };
+  }, [selectedQuality, onAnswer]);
 
-  const handleReplay = () => {
+  const handleReplay = useCallback(() => {
     setIsAnimating(false);
     setTimeout(() => setIsAnimating(true), 100);
-  };
+  }, []);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Ignore if user is typing in an input
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      // Answering phase shortcuts
+      if (phase === 'answering' && !isPaused && !isLoading) {
+        switch (event.key) {
+          case '1':
+            event.preventDefault();
+            handleAnswerClick('best');
+            break;
+          case '2':
+            event.preventDefault();
+            handleAnswerClick('ok');
+            break;
+          case '3':
+            event.preventDefault();
+            handleAnswerClick('bad');
+            break;
+          case ' ': // Spacebar to pause/unpause
+            event.preventDefault();
+            setIsPaused((prev) => !prev);
+            break;
+        }
+      }
+
+      // Revealing phase shortcuts
+      if (phase === 'revealing' && !isLoading) {
+        switch (event.key) {
+          case ' ': // Spacebar
+          case 'Enter':
+            event.preventDefault();
+            handleNextScenario();
+            break;
+          case 'r': // Replay animation
+          case 'R':
+            event.preventDefault();
+            handleReplay();
+            break;
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [phase, isPaused, isLoading, handleNextScenario, handleReplay]);
 
   // Get answer option based on quality
   const getAnswerOption = (quality: AnswerQuality) => {
@@ -138,17 +198,17 @@ export const DrillPlayer: React.FC<DrillPlayerProps> = ({
   };
 
   return (
-    <Box sx={{ py: 2 }}>
-      <Grid container spacing={3}>
+    <Box sx={{ py: { xs: 1, md: 2 } }}>
+      <Grid container spacing={{ xs: 2, md: 3 }}>
         {/* Left/Top Panel: Emphasized Field Visualization */}
         <Grid item xs={12} md={7} lg={8}>
           <Paper
             elevation={3}
             sx={{
-              p: 4,
+              p: { xs: 2, md: 4 },
               bgcolor: '#f0f4f8', // Light grey-blue background for contrast
-              borderRadius: 3,
-              minHeight: { xs: 300, md: 500 },
+              borderRadius: { xs: 2, md: 3 },
+              minHeight: { xs: 250, sm: 300, md: 500 },
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -156,7 +216,7 @@ export const DrillPlayer: React.FC<DrillPlayerProps> = ({
               overflow: 'hidden',
             }}
           >
-            <Box sx={{ width: '100%', maxWidth: '100%', aspectRatio: '1/1' }}>
+            <Box sx={{ width: '100%', maxWidth: { xs: '85%', sm: '90%', md: '100%' }, aspectRatio: '1/1' }}>
               <BaseballField
                 sport={scenario.sport}
                 runners={scenario.runners}
@@ -171,22 +231,42 @@ export const DrillPlayer: React.FC<DrillPlayerProps> = ({
 
         {/* Right/Bottom Panel: Scenario Controls */}
         <Grid item xs={12} md={5} lg={4}>
-          <Stack spacing={3} sx={{ height: '100%' }}>
+          <Stack spacing={{ xs: 2, md: 3 }} sx={{ height: '100%' }}>
             {/* Scenario Info */}
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
-              <CardContent>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-                  <Chip label={scenario.level.toUpperCase()} size="small" color="primary" variant="outlined" />
-                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
+              <CardContent sx={{ p: { xs: 1.5, md: 2 }, '&:last-child': { pb: { xs: 1.5, md: 2 } } }}>
+                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 0.5 }}>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Chip label={scenario.level.toUpperCase()} size="small" color="primary" variant="outlined" />
+                    {currentStreak > 0 && (
+                      <Chip
+                        icon={<Flame size={14} color="#ff6b35" />}
+                        label={currentStreak}
+                        size="small"
+                        sx={{
+                          bgcolor: 'warning.lighter',
+                          borderColor: 'warning.main',
+                          fontWeight: 700,
+                          '& .MuiChip-icon': { ml: 0.5 },
+                        }}
+                      />
+                    )}
+                  </Stack>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, fontSize: { xs: '0.65rem', md: '0.75rem' } }}>
                     {scenario.category.replace(/-/g, ' ').toUpperCase()}
                   </Typography>
                 </Stack>
-                
-                <Typography variant="h5" fontWeight="800" gutterBottom sx={{ lineHeight: 1.2 }}>
+
+                <Typography
+                  variant="h5"
+                  fontWeight="800"
+                  gutterBottom
+                  sx={{ lineHeight: 1.2, fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.5rem' } }}
+                >
                   {scenario.title}
                 </Typography>
 
-                <Stack direction="row" spacing={1} sx={{ mt: 2 }} flexWrap="wrap" useFlexGap>
+                <Stack direction="row" spacing={0.5} sx={{ mt: 1 }} flexWrap="wrap" useFlexGap>
                   <Chip label={`Outs: ${scenario.outs}`} size="small" />
                   {scenario.runners.length > 0 && (
                     <Chip label={`Runners: ${scenario.runners.join(', ')}`} size="small" color="error" variant="outlined" />
@@ -200,50 +280,87 @@ export const DrillPlayer: React.FC<DrillPlayerProps> = ({
 
             {/* Description & Question */}
             <Box sx={{ flex: 1 }}>
-              <Typography variant="body1" paragraph sx={{ fontSize: '1.05rem', color: 'text.primary' }}>
+              <Typography
+                variant="body1"
+                paragraph
+                sx={{ fontSize: { xs: '0.9rem', md: '1.05rem' }, color: 'text.primary', mb: { xs: 1, md: 2 } }}
+              >
                 {scenario.description}
               </Typography>
 
-              <Paper 
-                elevation={0} 
-                sx={{ p: 2.5, bgcolor: 'primary.main', color: 'primary.contrastText', borderRadius: 2, mt: 1 }}
+              <Paper
+                elevation={0}
+                sx={{
+                  p: { xs: 1.5, md: 2.5 },
+                  bgcolor: 'primary.main',
+                  color: 'primary.contrastText',
+                  borderRadius: 2,
+                }}
               >
-                <Typography variant="h6" fontWeight="600" sx={{ lineHeight: 1.3 }}>
+                <Typography
+                  variant="h6"
+                  fontWeight="600"
+                  sx={{ lineHeight: 1.3, fontSize: { xs: '0.95rem', sm: '1.1rem', md: '1.25rem' } }}
+                >
                   {scenario.question}
                 </Typography>
               </Paper>
             </Box>
 
-            {/* Timer Progress Bar */}
+            {/* Practice Mode Toggle & Timer */}
             {phase === 'answering' && (
               <Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography variant="caption" color="textSecondary">Time</Typography>
-                    <IconButton size="small" onClick={() => setIsPaused(!isPaused)} sx={{ p: 0.5 }}>
-                      {isPaused ? <Play size={14} /> : <Pause size={14} />}
-                    </IconButton>
-                  </Stack>
-                  <Typography variant="caption" color={timeProgress > 80 ? 'error' : 'textSecondary'}>
-                    {timeElapsed}s
-                  </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={practiceMode}
+                        onChange={(e) => setPracticeMode(e.target.checked)}
+                        size="small"
+                        color="secondary"
+                      />
+                    }
+                    label={
+                      <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 500 }}>
+                        Practice Mode
+                      </Typography>
+                    }
+                    sx={{ m: 0 }}
+                  />
+                  {!practiceMode && (
+                    <Stack direction="row" spacing={0.5} alignItems="center">
+                      <IconButton size="small" onClick={() => setIsPaused(!isPaused)} sx={{ p: 0.5 }}>
+                        {isPaused ? <Play size={14} /> : <Pause size={14} />}
+                      </IconButton>
+                      <Typography variant="caption" color={timeProgress > 80 ? 'error' : 'textSecondary'}>
+                        {timeElapsed}s / {maxTime}s
+                      </Typography>
+                    </Stack>
+                  )}
                 </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={timeProgress}
-                  sx={{
-                    height: 6,
-                    borderRadius: 1,
-                    bgcolor: 'action.hover',
-                    '& .MuiLinearProgress-bar': { bgcolor: timeProgress > 80 ? 'error.main' : 'primary.main' },
-                  }}
-                />
+                {!practiceMode && (
+                  <LinearProgress
+                    variant="determinate"
+                    value={timeProgress}
+                    sx={{
+                      height: 6,
+                      borderRadius: 1,
+                      bgcolor: 'action.hover',
+                      '& .MuiLinearProgress-bar': { bgcolor: timeProgress > 80 ? 'error.main' : 'primary.main' },
+                    }}
+                  />
+                )}
+                {practiceMode && (
+                  <Typography variant="caption" color="secondary" sx={{ fontStyle: 'italic' }}>
+                    Timer disabled - take your time!
+                  </Typography>
+                )}
               </Box>
             )}
 
             {/* Answer Phase */}
             {phase === 'answering' && (
-              <Stack spacing={2}>
+              <Stack spacing={{ xs: 1.5, md: 2 }}>
                 <Button
                   variant="contained"
                   color="success"
@@ -251,7 +368,7 @@ export const DrillPlayer: React.FC<DrillPlayerProps> = ({
                   fullWidth
                   onClick={() => handleAnswerClick('best')}
                   disabled={isLoading || isPaused}
-                  sx={{ py: 1.5, fontWeight: 600 }}
+                  sx={{ py: { xs: 1.25, md: 1.5 }, fontWeight: 600, fontSize: { xs: '0.9rem', md: '1rem' } }}
                 >
                   {scenario.best.label}
                 </Button>
@@ -262,7 +379,7 @@ export const DrillPlayer: React.FC<DrillPlayerProps> = ({
                   fullWidth
                   onClick={() => handleAnswerClick('ok')}
                   disabled={isLoading || isPaused}
-                  sx={{ py: 1.5, fontWeight: 600 }}
+                  sx={{ py: { xs: 1.25, md: 1.5 }, fontWeight: 600, fontSize: { xs: '0.9rem', md: '1rem' } }}
                 >
                   {scenario.ok.label}
                 </Button>
@@ -273,7 +390,7 @@ export const DrillPlayer: React.FC<DrillPlayerProps> = ({
                   fullWidth
                   onClick={() => handleAnswerClick('bad')}
                   disabled={isLoading || isPaused}
-                  sx={{ py: 1.5, fontWeight: 600 }}
+                  sx={{ py: { xs: 1.25, md: 1.5 }, fontWeight: 600, fontSize: { xs: '0.9rem', md: '1rem' } }}
                 >
                   {scenario.bad.label}
                 </Button>
@@ -282,32 +399,50 @@ export const DrillPlayer: React.FC<DrillPlayerProps> = ({
 
             {/* Reveal Phase */}
             {phase === 'revealing' && (
-              <Stack spacing={2}>
+              <Stack spacing={{ xs: 1.5, md: 2 }}>
                 {/* User's Answer Display */}
                 {selectedAnswer && (
                   <Card variant="outlined" sx={{ bgcolor: 'info.lighter', borderColor: 'info.main' }}>
-                    <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
-                      <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>YOU SELECTED</Typography>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{selectedAnswer.label}</Typography>
-                      <Typography variant="body2">{selectedAnswer.description}</Typography>
+                    <CardContent sx={{ py: { xs: 1, md: 1.5 }, px: { xs: 1.5, md: 2 }, '&:last-child': { pb: { xs: 1, md: 1.5 } } }}>
+                      <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600, fontSize: { xs: '0.65rem', md: '0.75rem' } }}>
+                        YOU SELECTED
+                      </Typography>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600, fontSize: { xs: '0.9rem', md: '1rem' } }}>
+                        {selectedAnswer.label}
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontSize: { xs: '0.8rem', md: '0.875rem' } }}>
+                        {selectedAnswer.description}
+                      </Typography>
                     </CardContent>
                   </Card>
                 )}
 
                 {selectedQuality === 'timeout' && (
-                   <Alert severity="error">Time's Up! You didn't answer in time.</Alert>
+                  <Alert severity="error" sx={{ py: { xs: 0.5, md: 1 } }}>
+                    Time's Up! You didn't answer in time.
+                  </Alert>
                 )}
 
                 {/* Correct Answer Display */}
                 <Card variant="outlined" sx={{ bgcolor: 'success.lighter', borderColor: 'success.main' }}>
-                  <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
-                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>BEST PLAY</Typography>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'success.main' }}>{scenario.best.label}</Typography>
-                    <Typography variant="body2" sx={{ mb: 1 }}>{scenario.best.description}</Typography>
-                    
-                    <Box sx={{ bgcolor: 'success.main', color: 'success.contrastText', p: 1, borderRadius: 1 }}>
-                      <Typography variant="caption" sx={{ fontWeight: 700, display: 'block' }}>COACHING CUE:</Typography>
-                      <Typography variant="body2">{scenario.best.coaching_cue}</Typography>
+                  <CardContent sx={{ py: { xs: 1, md: 1.5 }, px: { xs: 1.5, md: 2 }, '&:last-child': { pb: { xs: 1, md: 1.5 } } }}>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600, fontSize: { xs: '0.65rem', md: '0.75rem' } }}>
+                      BEST PLAY
+                    </Typography>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'success.main', fontSize: { xs: '0.9rem', md: '1rem' } }}>
+                      {scenario.best.label}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 1, fontSize: { xs: '0.8rem', md: '0.875rem' } }}>
+                      {scenario.best.description}
+                    </Typography>
+
+                    <Box sx={{ bgcolor: 'success.main', color: 'success.contrastText', p: { xs: 0.75, md: 1 }, borderRadius: 1 }}>
+                      <Typography variant="caption" sx={{ fontWeight: 700, display: 'block', fontSize: { xs: '0.65rem', md: '0.75rem' } }}>
+                        COACHING CUE:
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontSize: { xs: '0.8rem', md: '0.875rem' } }}>
+                        {scenario.best.coaching_cue}
+                      </Typography>
                     </Box>
                   </CardContent>
                 </Card>
@@ -315,9 +450,10 @@ export const DrillPlayer: React.FC<DrillPlayerProps> = ({
                 {/* Replay Animation Button */}
                 <Button
                   variant="outlined"
-                  startIcon={<RotateCcw size={18} />}
+                  startIcon={<RotateCcw size={16} />}
                   onClick={handleReplay}
                   fullWidth
+                  sx={{ py: { xs: 0.75, md: 1 }, fontSize: { xs: '0.85rem', md: '0.9rem' } }}
                 >
                   Replay Action
                 </Button>
@@ -328,7 +464,7 @@ export const DrillPlayer: React.FC<DrillPlayerProps> = ({
                   fullWidth
                   onClick={handleNextScenario}
                   disabled={isLoading}
-                  sx={{ py: 1.5, fontWeight: 600 }}
+                  sx={{ py: { xs: 1.25, md: 1.5 }, fontWeight: 600, fontSize: { xs: '0.9rem', md: '1rem' } }}
                 >
                   Next Scenario
                 </Button>

@@ -21,7 +21,7 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
-import { Play, Circle, CircleDot, Zap, LogOut } from 'lucide-react';
+import { Play, Circle, CircleDot, Zap, LogOut, BarChart3 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ScenarioV2, Position, PositionEnum } from '@/types/scenario';
 import { STARTER_DATASET } from '@/data/starterDataset';
@@ -261,15 +261,23 @@ export const ScenarioSelectPage: React.FC = () => {
               </Typography>
             </Box>
             <Stack spacing={1} alignItems="flex-end">
-              {/* Adaptive Drill Button */}
-              <Button
-                variant="contained"
-                onClick={() => navigate('/drill')}
-                startIcon={<Zap size={18} />}
-                sx={{ mb: 1 }}
-              >
-                Adaptive Drill
-              </Button>
+              {/* Action Buttons */}
+              <Stack direction="row" spacing={1}>
+                <Button
+                  variant="contained"
+                  onClick={() => navigate('/drill')}
+                  startIcon={<Zap size={18} />}
+                >
+                  Adaptive Drill
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate('/progress')}
+                  startIcon={<BarChart3 size={18} />}
+                >
+                  Progress
+                </Button>
+              </Stack>
               {user && (
                 <>
                   <Typography variant="caption" color="textSecondary">

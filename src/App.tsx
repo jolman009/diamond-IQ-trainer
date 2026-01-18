@@ -8,6 +8,7 @@ import { LoginPage } from '@/pages/LoginPage';
 import { AdaptiveDrillPage } from '@/pages/AdaptiveDrillPage';
 import { ScenarioPreviewPage } from '@/pages/ScenarioPreviewPage';
 import { ScenarioSelectPage } from '@/pages/ScenarioSelectPage';
+import { ProgressPage } from '@/pages/ProgressPage';
 
 function App(): JSX.Element {
   useEffect(() => {
@@ -29,6 +30,14 @@ function App(): JSX.Element {
             element={
               <ProtectedRoute>
                 <AdaptiveDrillPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/progress"
+            element={
+              <ProtectedRoute>
+                <ProgressPage />
               </ProtectedRoute>
             }
           />
