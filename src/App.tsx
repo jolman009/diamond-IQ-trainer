@@ -3,12 +3,14 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { initializeScenarioData } from '@/utils/initializeScenarioData';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { Layout } from '@/components/Layout';
 import { LandingPage } from '@/pages/LandingPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { AdaptiveDrillPage } from '@/pages/AdaptiveDrillPage';
 import { ScenarioPreviewPage } from '@/pages/ScenarioPreviewPage';
 import { ScenarioSelectPage } from '@/pages/ScenarioSelectPage';
 import { ProgressPage } from '@/pages/ProgressPage';
+import { LeaderboardPage } from '@/pages/LeaderboardPage';
 
 function App(): JSX.Element {
   useEffect(() => {
@@ -22,14 +24,19 @@ function App(): JSX.Element {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          {/* Public routes - no sidebar */}
           <Route path="/welcome" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/preview" element={<ScenarioPreviewPage />} />
+
+          {/* Protected routes - with sidebar layout */}
           <Route
             path="/drill"
             element={
               <ProtectedRoute>
-                <AdaptiveDrillPage />
+                <Layout>
+                  <AdaptiveDrillPage />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -37,7 +44,9 @@ function App(): JSX.Element {
             path="/progress"
             element={
               <ProtectedRoute>
-                <ProgressPage />
+                <Layout>
+                  <ProgressPage />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -45,7 +54,19 @@ function App(): JSX.Element {
             path="/"
             element={
               <ProtectedRoute>
-                <ScenarioSelectPage />
+                <Layout>
+                  <ScenarioSelectPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/leaderboard"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <LeaderboardPage />
+                </Layout>
               </ProtectedRoute>
             }
           />

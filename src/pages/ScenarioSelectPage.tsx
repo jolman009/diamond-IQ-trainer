@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
   Box,
-  Container,
   Typography,
   Card,
   CardContent,
@@ -21,13 +20,10 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
-import { Play, Circle, CircleDot, Zap, LogOut, BarChart3 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Play, Circle, CircleDot } from 'lucide-react';
 import { ScenarioV2, Position, PositionEnum } from '@/types/scenario';
 import { STARTER_DATASET } from '@/data/starterDataset';
 import { DrillPlayer } from '@/components/DrillPlayer';
-import { DiamondIQLogo } from '@/components/DiamondIQLogo';
-import { useAuth } from '@/contexts/AuthContext';
 
 type BaseConfiguration =
   | 'bases-empty'
@@ -81,14 +77,6 @@ const POSITION_LABELS: Record<Position, string> = {
  * Users can then start a drill with a specific scenario.
  */
 export const ScenarioSelectPage: React.FC = () => {
-  const navigate = useNavigate();
-  const { user, logout } = useAuth();
-
-  const handleLogout = () => {
-    logout();
-    void navigate('/login');
-  };
-
   // Filter state
   const [selectedBase, setSelectedBase] = useState<BaseConfiguration | null>(null);
   const [selectedOuts, setSelectedOuts] = useState<number | null>(null);
@@ -246,69 +234,18 @@ export const ScenarioSelectPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 4 }}>
-      <Container maxWidth="lg">
-        {/* Header */}
-        <Box sx={{ mb: { xs: 2, md: 4 } }}>
-          <Stack
-            direction={{ xs: 'column', md: 'row' }}
-            justifyContent="space-between"
-            alignItems={{ xs: 'flex-start', md: 'flex-start' }}
-            spacing={{ xs: 2, md: 0 }}
-          >
-            <Box>
-              <DiamondIQLogo />
-              <Typography variant="h5" sx={{ mt: 2, fontWeight: 600, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>
-                Scenario Browser
-              </Typography>
-              <Typography variant="body1" color="textSecondary" sx={{ fontSize: { xs: '0.875rem', md: '1rem' } }}>
-                Select a base runner situation, outs, and fielding position to find specific scenarios.
-              </Typography>
-            </Box>
-            <Stack spacing={1} alignItems={{ xs: 'flex-start', md: 'flex-end' }} sx={{ width: { xs: '100%', md: 'auto' } }}>
-              {/* Action Buttons */}
-              <Stack direction="row" spacing={1} sx={{ width: { xs: '100%', md: 'auto' } }}>
-                <Button
-                  variant="contained"
-                  onClick={() => navigate('/drill')}
-                  startIcon={<Zap size={18} />}
-                  sx={{ flex: { xs: 1, md: 'none' } }}
-                >
-                  Adaptive Drill
-                </Button>
-                <Button
-                  variant="outlined"
-                  onClick={() => navigate('/progress')}
-                  startIcon={<BarChart3 size={18} />}
-                  sx={{ flex: { xs: 1, md: 'none' } }}
-                >
-                  Progress
-                </Button>
-              </Stack>
-              {user && (
-                <>
-                  <Typography variant="caption" color="textSecondary">
-                    Signed in as
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {user.email}
-                  </Typography>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={handleLogout}
-                    startIcon={<LogOut size={16} />}
-                    sx={{ mt: 1 }}
-                  >
-                    Sign Out
-                  </Button>
-                </>
-              )}
-            </Stack>
-          </Stack>
-        </Box>
+    <Box sx={{ maxWidth: 'lg', mx: 'auto' }}>
+      {/* Page Header */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h5" sx={{ fontWeight: 600 }}>
+          Scenario Browser
+        </Typography>
+        <Typography variant="body2" color="textSecondary">
+          Select a base runner situation, outs, and fielding position to find specific scenarios.
+        </Typography>
+      </Box>
 
-        {/* Base Runner Configuration Grid */}
+      {/* Base Runner Configuration Grid */}
         <Paper sx={{ p: 3, mb: 3 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
             Base Runner Situation
@@ -540,7 +477,6 @@ export const ScenarioSelectPage: React.FC = () => {
             <Button onClick={handleCloseDrill}>Close</Button>
           </DialogActions>
         </Dialog>
-      </Container>
     </Box>
   );
 };

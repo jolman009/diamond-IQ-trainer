@@ -79,6 +79,7 @@ src/
 ├── data/                # Static data
 │   └── starterDataset.ts    # 30 training scenarios
 
+
 ├── pages/               # Page components
 │   ├── LandingPage.tsx      # Welcome screen
 │   ├── LoginPage.tsx        # Authentication

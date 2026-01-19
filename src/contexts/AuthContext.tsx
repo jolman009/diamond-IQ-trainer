@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, LoginCredentials } from '@/types/auth';
+import { User as SupabaseUser, Session } from '@supabase/supabase-js';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { User, LoginCredentials, SignupCredentials } from '@/types/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -7,40 +9,80 @@ interface AuthContextType {
   isLoading: boolean;
   error: string | null;
   login: (credentials: LoginCredentials) => Promise<void>;
-  logout: () => void;
+  signup: (credentials: SignupCredentials) => Promise<void>;
+  logout: () => Promise<void>;
+  clearError: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 /**
+ * Convert Supabase user to app User type
+ */
+function mapSupabaseUser(supabaseUser: SupabaseUser): User {
+  const metadata = supabaseUser.user_metadata || {};
+  return {
+    id: supabaseUser.id,
+    email: supabaseUser.email || '',
+    name:
+      (metadata['display_name'] as string) ||
+      supabaseUser.email?.split('@')[0] ||
+      'User',
+    avatarUrl: metadata['avatar_url'] as string | undefined,
+  };
+}
+
+/**
  * AuthProvider
  *
- * Manages authentication state with localStorage persistence.
- * In M7, this will be replaced with Supabase Auth.
- *
- * Demo behavior:
- * - Any email/password combination is accepted
- * - User object created from email
- * - Persists to localStorage under key 'adaptive-trainer-user'
+ * Manages authentication state with Supabase Auth.
+ * Falls back to demo mode when Supabase is not configured.
  */
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load user from localStorage on mount
   useEffect(() => {
-    const savedUser = localStorage.getItem('adaptive-trainer-user');
-    if (savedUser) {
-      try {
-        const parsed = JSON.parse(savedUser) as User;
-        setUser(parsed);
-      } catch (err) {
-        console.error('Failed to load user from localStorage:', err);
-        localStorage.removeItem('adaptive-trainer-user');
+    if (!isSupabaseConfigured) {
+      // Demo mode: load from localStorage
+      const savedUser = localStorage.getItem('adaptive-trainer-user');
+      if (savedUser) {
+        try {
+          setUser(JSON.parse(savedUser) as User);
+        } catch {
+          localStorage.removeItem('adaptive-trainer-user');
+        }
       }
+      setIsLoading(false);
+      return;
     }
-    setIsLoading(false);
+
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setUser(mapSupabaseUser(session.user));
+      }
+      setIsLoading(false);
+    });
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(
+      (_event: string, session: Session | null) => {
+        if (session?.user) {
+          setUser(mapSupabaseUser(session.user));
+        } else {
+          setUser(null);
+        }
+        setIsLoading(false);
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const login = async (credentials: LoginCredentials): Promise<void> => {
@@ -48,26 +90,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
 
     try {
-      // Basic validation
       if (!credentials.email || !credentials.password) {
         throw new Error('Email and password are required');
       }
 
-      if (!credentials.email.includes('@')) {
-        throw new Error('Invalid email format');
+      if (!isSupabaseConfigured) {
+        // Demo mode
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        const demoUser: User = {
+          id: `demo-${Date.now()}`,
+          email: credentials.email,
+          name: credentials.email.split('@')[0] || 'User',
+        };
+        setUser(demoUser);
+        localStorage.setItem('adaptive-trainer-user', JSON.stringify(demoUser));
+        return;
       }
 
-      // Demo: simulate network delay and create user
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const newUser: User = {
-        id: `user-${Date.now()}`,
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
         email: credentials.email,
-        name: credentials.email.split('@')[0] || 'User',
-      };
+        password: credentials.password,
+      });
 
-      setUser(newUser);
-      localStorage.setItem('adaptive-trainer-user', JSON.stringify(newUser));
+      if (authError) {
+        throw new Error(authError.message);
+      }
+
+      if (data.user) {
+        setUser(mapSupabaseUser(data.user));
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Login failed';
       setError(message);
@@ -77,11 +128,83 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const logout = () => {
-    setUser(null);
+  const signup = async (credentials: SignupCredentials): Promise<void> => {
+    setIsLoading(true);
     setError(null);
-    localStorage.removeItem('adaptive-trainer-user');
+
+    try {
+      if (!credentials.email || !credentials.password) {
+        throw new Error('Email and password are required');
+      }
+
+      if (credentials.password.length < 6) {
+        throw new Error('Password must be at least 6 characters');
+      }
+
+      if (!isSupabaseConfigured) {
+        // Demo mode: treat signup as login
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        const demoUser: User = {
+          id: `demo-${Date.now()}`,
+          email: credentials.email,
+          name: credentials.displayName || credentials.email.split('@')[0] || 'User',
+        };
+        setUser(demoUser);
+        localStorage.setItem('adaptive-trainer-user', JSON.stringify(demoUser));
+        return;
+      }
+
+      const { data, error: authError } = await supabase.auth.signUp({
+        email: credentials.email,
+        password: credentials.password,
+        options: {
+          data: {
+            display_name: credentials.displayName || credentials.email.split('@')[0],
+          },
+        },
+      });
+
+      if (authError) {
+        throw new Error(authError.message);
+      }
+
+      // Check if email confirmation is required
+      if (data.user && !data.session) {
+        throw new Error(
+          'Check your email for a confirmation link to complete signup.'
+        );
+      }
+
+      if (data.user) {
+        setUser(mapSupabaseUser(data.user));
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Signup failed';
+      setError(message);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const logout = async (): Promise<void> => {
+    setError(null);
+
+    if (!isSupabaseConfigured) {
+      // Demo mode
+      setUser(null);
+      localStorage.removeItem('adaptive-trainer-user');
+      return;
+    }
+
+    const { error: signOutError } = await supabase.auth.signOut();
+    if (signOutError) {
+      console.error('Logout error:', signOutError);
+    }
+    setUser(null);
+  };
+
+  const clearError = () => setError(null);
 
   return (
     <AuthContext.Provider
@@ -91,7 +214,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         error,
         login,
+        signup,
         logout,
+        clearError,
       }}
     >
       {children}

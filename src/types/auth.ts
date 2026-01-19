@@ -1,15 +1,14 @@
 /**
  * Auth Types
  *
- * Represents user authentication state.
- * In M7, this will connect to Supabase.
- * For now, it's a local demo with localStorage persistence.
+ * Represents user authentication state with Supabase.
  */
 
 export interface User {
   id: string;
   email: string;
   name: string;
+  avatarUrl?: string;
 }
 
 export interface AuthState {
@@ -22,4 +21,10 @@ export interface AuthState {
 export interface LoginCredentials {
   email: string;
   password: string;
+}
+
+export interface SignupCredentials {
+  email: string;
+  password: string;
+  displayName?: string;
 }

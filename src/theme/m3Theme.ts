@@ -19,47 +19,47 @@ const baseTheme = createTheme({
     },
   },
   palette: {
-    mode: 'light',
+    mode: 'dark',
     primary: {
-      main: '#006FEE',
-      light: '#5B9EFF',
-      dark: '#004BD6',
+      main: '#06b6d4', // Cyan 500 - matching new UI
+      light: '#22d3ee',
+      dark: '#0891b2',
       contrastText: '#fff',
     },
     secondary: {
-      main: '#03DAC6',
-      light: '#66F9FF',
-      dark: '#0088AC',
-      contrastText: '#000',
+      main: '#a855f7', // Purple 500
+      light: '#c084fc',
+      dark: '#9333ea',
+      contrastText: '#fff',
     },
     error: {
-      main: '#CF6679',
-      light: '#F1B0BB',
-      dark: '#B3261E',
+      main: '#f43f5e', // Rose 500
+      light: '#fb7185',
+      dark: '#e11d48',
     },
     warning: {
-      main: '#F57C00',
-      light: '#FFA040',
-      dark: '#E65100',
+      main: '#f59e0b', // Amber 500
+      light: '#fbbf24',
+      dark: '#d97706',
     },
     info: {
-      main: '#2196F3',
-      light: '#64B5F6',
-      dark: '#1976D2',
+      main: '#3b82f6', // Blue 500
+      light: '#60a5fa',
+      dark: '#2563eb',
     },
     success: {
-      main: '#4CAF50',
-      light: '#81C784',
-      dark: '#388E3C',
+      main: '#22c55e', // Green 500
+      light: '#4ade80',
+      dark: '#16a34a',
     },
     background: {
-      default: '#FFFBFE',
-      paper: '#FFFBFE',
+      default: '#0f172a', // Slate 900
+      paper: '#1e293b', // Slate 800
     },
     text: {
-      primary: 'rgba(0, 0, 0, 0.87)',
-      secondary: 'rgba(0, 0, 0, 0.6)',
-      disabled: 'rgba(0, 0, 0, 0.38)',
+      primary: 'rgba(255, 255, 255, 0.87)',
+      secondary: 'rgba(255, 255, 255, 0.6)',
+      disabled: 'rgba(255, 255, 255, 0.38)',
     },
   },
   typography: {
