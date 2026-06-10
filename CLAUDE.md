@@ -92,3 +92,21 @@ VITE_SUPABASE_ANON_KEY=your-anon-key
 ## Database
 
 SQL schemas in repo root: `supabase-schema.sql` (core tables), `supabase-schema-roles.sql` (RLS policies), `supabase-schema-teams.sql` (team feature).
+
+## Deployment
+
+- **Hosting**: Vercel (project: `diamond-ai-performance`, team: `joel-guzmans-projects-f8aa100e`)
+- **Domains**: `diamond-ai-performance.vercel.app`
+- **Supabase env vars** (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) must be set in both `.env.local` (local) and Vercel project settings (production)
+- Pushes to `main` trigger Vercel auto-deploy
+
+## Session Log
+
+### 2026-06-10: Supabase project rebuild
+- Original Supabase project `Diamond-IQ-Trainer` (id: `ppmcemxesjmxclvicile`, us-west-2) was paused >90 days and could not be restored (backup retrieval failed).
+- Created new project `Diamond-IQ-Trainer-v2` (id: `jvxjfsqufiicclyeokms`, us-west-1).
+- Applied all 3 SQL schemas in order: `supabase-schema.sql` → `supabase-schema-roles.sql` → `supabase-schema-teams.sql`.
+- Created `.env.local` with new credentials.
+- Updated Vercel env vars and redeployed.
+- Old project `ppmcemxesjmxclvicile` still exists as INACTIVE and can be deleted from the Supabase dashboard.
+- Also in this session: ran `pnpm install` (node_modules were missing), created `CLAUDE.md`.
